@@ -5,100 +5,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guru da Elétrica - Plataforma Online</title>
     <style>
-        /* ESTILOS GERAIS */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: #000; color: #fff; height: 100vh; overflow: hidden; user-select: none; }
+        /* --- RESET E BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #121212; color: #e0e0e0; height: 100vh; overflow: hidden; }
         .oculto { display: none !important; }
         
-        /* CORES DE STATUS */
-        .status-analise { background-color: #2196f3; color: #fff; } 
-        .status-proposta { background-color: #ff9800; color: #000; }
-        .status-contra { background-color: #9c27b0; color: #fff; }
-        .status-verificando { background-color: #e91e63; color: #fff; }
-        .status-recusado { background-color: #d32f2f; color: #fff; } 
-        .status-pago { background-color: #4caf50; color: #fff; } 
-        .status-finalizado { background-color: #607d8b; color: #fff; }
+        /* --- CORES E VARIÁVEIS --- */
+        :root {
+            --primary: #0095f6;
+            --bg-dark: #121212;
+            --bg-card: #1e1e1e;
+            --sidebar: #000000;
+            --text-main: #fff;
+            --text-muted: #aaa;
+            --border: #333;
+            --status-analise: #2196f3;
+            --status-proposta: #ff9800;
+            --status-contra: #9c27b0;
+            --status-verif: #e91e63;
+            --status-pago: #4caf50;
+            --status-final: #607d8b;
+            --danger: #d32f2f;
+        }
 
-        /* LAYOUT */
+        /* =========================================
+           LAYOUT 1: TELA DE LOGIN (COM SLIDESHOW) 
+           ========================================= */
         .split-screen { display: flex; height: 100vh; width: 100%; }
         .left-side-showcase { flex: 1; position: relative; display: flex; align-items: flex-end; padding: 60px; overflow: hidden; background-color: #000; }
+        
+        /* Imagens do Slide */
         .slide-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0; animation: imageSlide 15s infinite; z-index: 0; }
         .slide-img:nth-child(1) { background-image: url('https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?q=80&w=1476&auto=format&fit=crop'); animation-delay: 0s; }
         .slide-img:nth-child(2) { background-image: url('https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?q=80&w=1470&auto=format&fit=crop'); animation-delay: 5s; }
         .slide-img:nth-child(3) { background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1472&auto=format&fit=crop'); animation-delay: 10s; }
-        @keyframes imageSlide { 0% { opacity: 0; transform: scale(1); } 10% { opacity: 1; transform: scale(1.05); } 33% { opacity: 1; transform: scale(1.1); } 43% { opacity: 0; transform: scale(1); } 100% { opacity: 0; } }
+        
+        @keyframes imageSlide { 
+            0% { opacity: 0; transform: scale(1); } 
+            10% { opacity: 1; transform: scale(1.05); } 
+            33% { opacity: 1; transform: scale(1.1); } 
+            43% { opacity: 0; transform: scale(1); } 
+            100% { opacity: 0; } 
+        }
+
         .overlay-dark { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.3)); z-index: 1; }
         .showcase-content { position: relative; z-index: 2; max-width: 500px; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); }
         .showcase-content h1 { font-size: 44px; margin-bottom: 15px; color: #fff; font-weight: 800; line-height: 1.1; }
         
-        .right-side-container { flex: 1; background-color: #121212; z-index: 3; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; border-left: 1px solid #222; }
-        .right-side-container.center-content { justify-content: center; align-items: center; }
+        .auth-container { flex: 1; background-color: #121212; z-index: 3; display: flex; flex-direction: column; justify-content: center; align-items: center; border-left: 1px solid #222; }
+        .container-auth { width: 400px; max-width: 90%; padding: 40px; }
+        .box { background-color: var(--bg-card); border: 1px solid var(--border); padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+
+        /* =========================================
+           LAYOUT 2: DASHBOARD INTERNO (SEM SLIDE)
+           ========================================= */
+        .app-layout { display: flex; height: 100vh; width: 100%; background: var(--bg-dark); }
         
-        .container-auth { width: 450px; max-width: 100%; padding: 40px; } 
-        .box { background-color: #1e1e1e; border: 1px solid #333; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        /* Menu Lateral (Sidebar) */
+        .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px; flex-shrink: 0; }
+        .sidebar-logo { font-size: 24px; font-weight: bold; color: #fff; margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
+        .sidebar-logo span { color: var(--primary); }
+        
+        .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .nav-item { padding: 12px 15px; border-radius: 8px; color: var(--text-muted); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; font-weight: 500; border: none; background: transparent; text-align: left; width: 100%; font-size: 14px; }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); color: #fff; }
+        .nav-item.danger { color: var(--danger); margin-top: auto; }
+        .nav-item.danger:hover { background: rgba(211, 47, 47, 0.1); }
+
+        /* Área de Conteúdo */
+        .main-content { flex: 1; overflow-y: auto; padding: 30px; position: relative; }
+        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .user-welcome h2 { font-size: 24px; color: #fff; }
+        .user-welcome p { color: var(--text-muted); font-size: 14px; }
+        
+        /* Grid de Pedidos */
+        .requests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+        .request-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px; transition: transform 0.2s; position: relative; }
+        .request-card:hover { transform: translateY(-2px); border-color: #555; }
+        
+        /* Elementos UI */
         .logo { font-size: 32px; margin-bottom: 30px; font-family: 'Segoe UI', sans-serif; color: #fff; font-weight: bold; }
         .logo span { color: #0095f6; }
-        input, select, textarea { width: 100%; padding: 10px; margin-bottom: 12px; background-color: #262626; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; }
-        button.btn-primary { width: 100%; padding: 12px; background-color: #0095f6; border: none; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; font-size: 15px; transition: 0.2s; }
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 12px; background-color: #262626; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; }
+        button.btn-primary { width: 100%; padding: 12px; background-color: var(--primary); border: none; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 14px; transition: 0.2s; }
         button.btn-primary:hover { opacity: 0.9; }
-        button.btn-primary:disabled { background-color: #555; cursor: not-allowed; opacity: 0.5; }
-        button.btn-secondary { background-color: transparent; border: 1px solid #555; color: #ccc; margin-top: 5px; }
-        button.btn-secondary:hover { border-color: #fff; color: #fff; }
-        button.btn-admin { background-color: #e91e63; margin-top: 5px; } 
-        button.btn-danger { background-color: #d32f2f; color: #fff; }
-        button.btn-small { padding: 5px 10px; font-size: 12px; margin-top: 0; width: auto; }
+        button:disabled { background-color: #333 !important; color: #666 !important; cursor: not-allowed; }
+        button.btn-danger { background-color: var(--danger); color: #fff; }
+        button.btn-secondary { background: transparent; border: 1px solid #555; color: #ccc; margin-top: 5px; }
         
-        .dash-header { padding: 15px 40px; background-color: #121212; border-bottom: 1px solid #262626; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .header-controls { display: flex; gap: 10px; align-items: center; }
-        .btn-header { background: transparent; border: 1px solid #444; color: #ccc; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
-        .btn-header:hover { border-color: #fff; color: #fff; }
-        .dash-content { padding: 40px; max-width: 800px; margin: 0 auto; width: 100%; }
-        
-        .tabs-container { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .tab-btn { background: transparent; border: none; color: #777; padding: 8px 15px; cursor: pointer; font-weight: bold; border-radius: 4px; transition: 0.2s; }
-        .tab-btn.active { background: #333; color: #fff; }
-        .tab-btn:hover { color: #fff; }
+        /* Abas */
+        .tabs-header { display: flex; gap: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+        .tab-link { padding: 10px 0; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px; position: relative; }
+        .tab-link.active { color: var(--primary); font-weight: bold; }
+        .tab-link.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: var(--primary); }
 
-        .guru-card { background: linear-gradient(135deg, #1e1e1e 0%, #252525 100%); border: 1px solid #333; border-radius: 12px; padding: 25px; display: flex; align-items: center; gap: 20px; margin-bottom: 30px; }
-        .guru-avatar { width: 90px; height: 90px; border-radius: 50%; background-color: #333; border: 2px solid #0095f6; background-size: cover; background-position: center; flex-shrink: 0; }
-        
-        .request-card { background-color: #1e1e1e; border: 1px solid #333; border-radius: 8px; padding: 20px; margin-bottom: 15px; position: relative; }
-        .reclamacao-card { background-color: #2a1a1a; border: 1px solid #d32f2f; border-radius: 8px; padding: 20px; margin-bottom: 15px; position: relative; }
-        .req-status { padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; text-transform: uppercase; }
-        .btn-delete-req { position: absolute; top: 20px; right: 20px; background: transparent; border: none; color: #d32f2f; cursor: pointer; font-size: 18px; }
-        .btn-delete-req:hover { color: #ff5252; }
+        /* Badges de Status */
+        .req-status { padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 11px; text-transform: uppercase; align-self: flex-start; }
+        .btn-delete-req { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: var(--danger); cursor: pointer; font-size: 18px; }
 
-        .rating-stars { display: flex; justify-content: center; gap: 5px; margin-bottom: 10px; }
-        .star { font-size: 30px; cursor: pointer; color: #444; transition: 0.2s; }
-        .star.selected, .star:hover { color: #ffeb3b; }
-
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); z-index: 200; display: flex; justify-content: center; align-items: center; }
-        .modal-box { background-color: #181818; width: 500px; max-width: 95%; border-radius: 12px; border: 1px solid #333; padding: 20px; text-align: left; }
+        /* Modais */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 200; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-box { background-color: var(--bg-card); width: 500px; max-width: 95%; border-radius: 12px; border: 1px solid var(--border); padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         
-        .pix-display-key { background: #fff; color: #000; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 18px; text-align: center; word-break: break-all; margin: 15px 0; border: 2px solid #4caf50; }
-
-        .profile-section { max-width: 600px; margin: 0 auto; padding-top: 20px; }
-        .profile-header { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; }
-        .profile-pic-large { width: 80px; height: 80px; background: #333; border-radius: 50%; border: 2px solid #0095f6; display: flex; align-items: center; justify-content: center; font-size: 30px; background-size: cover; background-position: center; }
-        
-        .custom-file-upload { display: inline-block; padding: 10px; cursor: pointer; background: #262626; color: #ccc; border-radius: 6px; font-size: 13px; border: 1px dashed #444; margin-top: 5px; text-align: center; width: 100%; }
-        .custom-file-upload:hover { background: #333; border-color: #666; color: #fff; }
+        .custom-file-upload { display: block; padding: 15px; cursor: pointer; background: #262626; color: #ccc; border-radius: 8px; border: 1px dashed #555; text-align: center; transition: 0.2s; margin-top: 10px; }
+        .custom-file-upload:hover { border-color: var(--primary); color: #fff; background: #2a2a2a; }
         input[type="file"] { display: none; }
 
-        details.faq-item { background: #1e1e1e; border: 1px solid #333; border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
-        details.faq-item summary { padding: 15px; cursor: pointer; font-weight: bold; list-style: none; display: flex; justify-content: space-between; align-items: center; }
-        details.faq-item summary::after { content: '+'; font-size: 20px; color: #0095f6; }
-        details.faq-item[open] summary::after { content: '-'; }
-        details.faq-item p { padding: 15px; border-top: 1px solid #333; color: #ccc; font-size: 14px; line-height: 1.5; }
-        .danger-zone { margin-top: 30px; padding: 15px; border: 1px solid #d32f2f; border-radius: 8px; background: rgba(211, 47, 47, 0.1); }
-        .danger-zone h4 { color: #d32f2f; margin-bottom: 10px; }
+        /* PIX */
+        .pix-display-key { background: #fff; color: #000; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 16px; text-align: center; word-break: break-all; margin: 15px 0; border: 2px dashed var(--status-pago); }
 
-        /* AVALIAÇÕES NO MODAL DO GURU */
-        .review-item { background: #181818; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid #0095f6; }
-        .review-header { display: flex; justify-content: space-between; font-size: 12px; color: #aaa; margin-bottom: 5px; }
-        .review-stars { color: #ffeb3b; font-size: 14px; }
+        /* Perfil Admin */
+        .profile-large-img { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 20px; background-size: cover; background-position: center; border: 3px solid var(--primary); background-color: #333; }
+        .rating-stars { display: flex; justify-content: center; gap: 5px; margin-bottom: 10px; }
+        .star { font-size: 30px; cursor: pointer; color: #444; }
+        .star.selected { color: #ffeb3b; }
 
-        @media (max-width: 900px) { .left-side-showcase { display: none; } .right-side-container { border-left: none; } }
+        /* Mobile */
+        @media (max-width: 900px) { 
+            .left-side-showcase { display: none; } 
+            .auth-container { border-left: none; }
+            .app-layout { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; flex-direction: row; padding: 10px; overflow-x: auto; border-bottom: 1px solid var(--border); border-right: none; align-items: center; }
+            .sidebar-logo { margin-bottom: 0; margin-right: 20px; font-size: 20px; }
+            .nav-menu { flex-direction: row; }
+            .nav-item { padding: 8px 12px; white-space: nowrap; }
+            .requests-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -108,16 +140,16 @@
             <div class="slide-img"></div><div class="slide-img"></div><div class="slide-img"></div><div class="overlay-dark"></div>
             <div class="showcase-content"><h1>Seu Guru de Engenharia.</h1><p>Receba ajuda personalizada agora.</p></div>
         </div>
-        <div class="right-side-container center-content">
+        <div class="auth-container">
             <div id="box-login" class="container-auth">
                 <div class="box">
                     <h1 class="logo">Guru<span>Elétrica</span></h1>
                     <form id="formLogin">
                         <input type="text" id="login-user" placeholder="Email" required>
                         <input type="password" id="login-pass" placeholder="Senha" required>
-                        <button type="submit" class="btn-primary">Entrar</button>
+                        <button type="submit" class="btn-primary">Entrar na Plataforma</button>
                     </form>
-                    <p style="margin-top:15px; font-size:13px; color:#aaa;">Não tem conta? <a href="#" id="link-cadastro" style="color:#0095f6;">Cadastre-se</a></p>
+                    <p style="margin-top:15px; font-size:13px; color:#aaa;">Não tem conta? <a href="#" id="link-cadastro" style="color:var(--primary);">Cadastre-se</a></p>
                 </div>
             </div>
             <div id="box-cadastro" class="container-auth oculto">
@@ -133,120 +165,91 @@
                         <input type="password" id="cad-pass" placeholder="Senha" required>
                         <button type="submit" class="btn-primary">Cadastrar</button>
                     </form>
-                    <p style="margin-top:15px; font-size:13px; color:#aaa;">Já tem conta? <a href="#" id="link-login" style="color:#0095f6;">Voltar</a></p>
+                    <p style="margin-top:15px; font-size:13px; color:#aaa;">Já tem conta? <a href="#" id="link-login" style="color:var(--primary);">Voltar</a></p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="tela-dashboard" class="split-screen oculto">
-        <div class="left-side-showcase">
-            <div class="slide-img"></div><div class="slide-img"></div><div class="slide-img"></div><div class="overlay-dark"></div>
-            <div class="showcase-content"><h1>Painel Online</h1><p>Conectado em tempo real.</p></div>
-        </div>
+    <div id="tela-dashboard" class="app-layout oculto">
         
-        <div class="right-side-container">
-            <header class="dash-header">
-                <div class="dash-logo">Guru<span>Elétrica</span> <small id="badge-role" style="font-size:10px; background:#333; padding:2px 5px; border-radius:4px;">ALUNO</small></div>
-                <div class="header-controls">
-                    <button id="btn-voltar-dash" class="btn-header oculto">← Voltar</button>
-                    <button id="btn-reclamacao" class="btn-header" style="color:#d32f2f; border-color:#d32f2f;">Reclamar</button>
-                    <button id="btn-admin-recl" class="btn-header oculto" style="color:#ff5252; border-color:#ff5252;">Reclamações</button>
-                    <button id="btn-ajuda" class="btn-header">Ajuda</button>
-                    <button id="btn-perfil" class="btn-header">Meu Perfil</button>
-                    <button id="btn-sair" class="btn-header" style="border-color:#555;">Sair</button>
+        <aside class="sidebar">
+            <div class="sidebar-logo">⚡ Guru<span>Elétrica</span></div>
+            <nav class="nav-menu">
+                <button class="nav-item active" id="nav-pedidos">📝 Meus Pedidos</button>
+                <button class="nav-item" id="nav-perfil">👤 Meu Perfil</button>
+                
+                <button class="nav-item oculto" id="nav-config-guru">⚙️ Config Guru</button>
+                <button class="nav-item oculto" id="nav-reclamacoes">📢 Reclamações</button> <button class="nav-item" id="nav-fazer-reclamacao">📢 Reclamar</button> <button class="nav-item" id="nav-ajuda">❓ Ajuda</button>
+                <button class="nav-item danger" id="btn-sair">🚪 Sair</button>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            
+            <div class="main-header">
+                <div class="user-welcome">
+                    <h2 id="welcome-msg">Bem-vindo!</h2>
+                    <p id="welcome-sub">Painel de Controle</p>
                 </div>
-            </header>
-
-            <div class="dash-content">
-                <div id="conteudo-pedidos">
-                    <div id="area-guru" class="guru-card">
-                        <div id="guru-avatar-img" class="guru-avatar"></div>
-                        <div class="guru-info">
-                            <h2 id="guru-title">Carregando...</h2>
-                            <p id="guru-subtitle" style="color:#aaa;">...</p>
-                            <button class="btn-primary btn-small" id="btn-ver-quali" style="background:#333; border:1px solid #555; margin-top:5px;">Ver Qualificações</button>
-                        </div>
-                    </div>
-
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                        <span style="font-size:18px; font-weight:bold;">Seus Pedidos</span>
-                        <button class="btn-primary" id="btn-novo-pedido" style="width:auto; margin:0;">+ Novo Pedido</button>
-                    </div>
-
-                    <div class="tabs-container">
-                        <button class="tab-btn active" data-tab="aberto">Em Aberto</button>
-                        <button class="tab-btn" data-tab="andamento">Em Andamento</button>
-                        <button class="tab-btn" data-tab="finalizado">Finalizados</button>
-                    </div>
-
-                    <div id="lista-pedidos"></div>
-                </div>
-
-                <div id="conteudo-perfil-aluno" class="profile-section oculto">
-                    <div class="profile-header">
-                        <div class="profile-pic-large" style="background-image: none;">👤</div>
-                        <div>
-                            <h2 id="perf-nome-display">Carregando...</h2>
-                            <p style="color:#aaa;" id="perf-email-display">email@exemplo.com</p>
-                        </div>
-                    </div>
-                    <form id="formPerfilAluno">
-                        <label style="font-size:12px; color:#888;">Seu Nome</label>
-                        <input type="text" id="perf-nome" placeholder="Seu Nome">
-                        <label style="font-size:12px; color:#888;">WhatsApp</label>
-                        <input type="text" id="perf-zap" placeholder="DDD + Número">
-                        <label style="font-size:12px; color:#888;">Curso / Universidade</label>
-                        <input type="text" id="perf-curso" placeholder="Ex: Eng. Elétrica - UFERSA">
-                        <label style="font-size:12px; color:#888;">Biografia / Objetivos</label>
-                        <textarea id="perf-bio" placeholder="Conte um pouco sobre suas dificuldades..." style="height:100px;"></textarea>
-                        <button type="submit" class="btn-primary">Salvar Alterações</button>
-                    </form>
-                </div>
-
-                <div id="conteudo-config-guru" class="profile-section oculto">
-                    <h2 style="margin-bottom:20px; color:#e91e63;">Configuração do Perfil (Admin)</h2>
-                    <div style="text-align:center; margin-bottom:20px;">
-                        <div id="preview-avatar" style="width:100px; height:100px; border-radius:50%; background:#333; margin:0 auto; background-size:cover; background-position:center; border:2px solid #e91e63;"></div>
-                        <label for="upload-foto" class="custom-file-upload" style="max-width:200px;">📷 Trocar Foto</label>
-                        <input id="upload-foto" type="file" accept="image/*">
-                    </div>
-                    <form id="formConfigGuru">
-                        <input type="hidden" id="conf-img-base64">
-                        <input type="hidden" id="conf-pdf-base64">
-                        
-                        <label style="font-size:12px; color:#888;">Título Principal</label>
-                        <input type="text" id="conf-titulo">
-                        <label style="font-size:12px; color:#888;">Subtítulo (Especialidade)</label>
-                        <input type="text" id="conf-sub">
-                        <label style="font-size:12px; color:#888;">Qualificações / Sobre Mim</label>
-                        <textarea id="conf-bio" style="height:100px;"></textarea>
-                        
-                        <label style="color:#2196f3; font-size:12px;">Link Currículo Lattes</label>
-                        <input type="text" id="conf-lattes" placeholder="http://lattes.cnpq.br/...">
-                        
-                        <label style="color:#2196f3; font-size:12px;">Upload Currículo PDF</label>
-                        <label for="upload-pdf-curriculo" class="custom-file-upload">📎 Selecionar PDF</label>
-                        <input type="file" id="upload-pdf-curriculo" accept=".pdf">
-                        <div id="display-pdf-name" style="font-size:12px; color:#888; text-align:center; margin-bottom:15px;">Nenhum arquivo</div>
-
-                        <label style="font-size:12px; color:#4caf50;">Chave PIX (Para Recebimento)</label>
-                        <input type="text" id="conf-pix" style="border-color:#4caf50;">
-
-                        <div style="border-top:1px solid #333; margin-top:20px; padding-top:20px;">
-                            <label style="font-size:12px; color:#e91e63;">Alterar Senha de Admin</label>
-                            <input type="password" id="conf-senha" placeholder="Nova senha">
-                        </div>
-                        <button type="submit" class="btn-primary btn-admin">Salvar Tudo</button>
-                    </form>
-                </div>
-
-                <div id="conteudo-reclamacoes" class="profile-section oculto">
-                    <h2 style="margin-bottom:20px; color:#d32f2f;">Caixa de Reclamações</h2>
-                    <div id="lista-reclamacoes-admin"></div>
+                <div id="mini-guru-card" style="display:flex; align-items:center; gap:10px; background:var(--bg-card); padding:8px 15px; border-radius:30px; border:1px solid var(--border);">
+                    <div id="header-guru-img" style="width:30px; height:30px; border-radius:50%; background:#333; background-size:cover;"></div>
+                    <span style="font-size:12px; font-weight:bold;">Guru Online</span>
+                    <button id="btn-ver-quali-header" style="background:none; border:none; color:var(--primary); font-size:11px; cursor:pointer;">Ver Info</button>
                 </div>
             </div>
-        </div>
+
+            <div id="view-pedidos">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <div class="tabs-header" style="margin-bottom:0; border:none;">
+                        <button class="tab-link active" data-tab="aberto">Em Aberto</button>
+                        <button class="tab-link" data-tab="andamento">Em Andamento</button>
+                        <button class="tab-link" data-tab="finalizado">Finalizados</button>
+                    </div>
+                    <button class="btn-primary" id="btn-novo-pedido" style="width:auto;">+ Novo Pedido</button>
+                </div>
+
+                <div id="lista-pedidos" class="requests-grid"></div>
+            </div>
+
+            <div id="view-perfil-aluno" class="profile-section oculto">
+                <div class="profile-large-img" style="background-image:none; display:flex; align-items:center; justify-content:center; font-size:40px;">👤</div>
+                <h2 style="text-align:center; margin-bottom:30px;">Editar Perfil</h2>
+                <form id="formPerfilAluno">
+                    <label>Seu Nome</label><input type="text" id="perf-nome">
+                    <label>WhatsApp</label><input type="text" id="perf-zap">
+                    <label>Curso</label><input type="text" id="perf-curso">
+                    <label>Bio</label><textarea id="perf-bio"></textarea>
+                    <button type="submit" class="btn-primary">Salvar Alterações</button>
+                </form>
+            </div>
+
+            <div id="view-config-guru" class="profile-section oculto">
+                <div id="preview-avatar" class="profile-large-img"></div>
+                <div style="text-align:center; margin-bottom:20px;">
+                    <label for="upload-foto" style="cursor:pointer; color:var(--primary);">Alterar Foto</label>
+                    <input id="upload-foto" type="file" accept="image/*">
+                </div>
+                <form id="formConfigGuru">
+                    <input type="hidden" id="conf-img-base64">
+                    <label>Título</label><input type="text" id="conf-titulo">
+                    <label>Subtítulo</label><input type="text" id="conf-sub">
+                    <label>Sobre Mim</label><textarea id="conf-bio"></textarea>
+                    
+                    <label style="color:var(--status-pago);">Chave PIX (Para Recebimento)</label>
+                    <input type="text" id="conf-pix" style="border-color:var(--status-pago);">
+
+                    <label style="color:var(--status-verif);">Alterar Senha</label><input type="password" id="conf-senha" placeholder="Nova senha">
+                    <button type="submit" class="btn-primary btn-admin">Salvar Configurações</button>
+                </form>
+            </div>
+
+            <div id="view-reclamacoes" class="oculto">
+                <h2 style="color:var(--danger); margin-bottom:20px;">Painel de Reclamações</h2>
+                <div id="lista-reclamacoes-admin" class="requests-grid"></div>
+            </div>
+
+        </main>
     </div>
 
     <div id="modal-pedido" class="modal-overlay oculto">
@@ -262,19 +265,77 @@
                 <input type="hidden" id="ped-file-base64">
                 <button type="submit" class="btn-primary">Enviar</button>
             </form>
-            <button class="btn-close-modal" style="margin-top:10px; color:#aaa; width:100%; border:none; background:transparent; cursor:pointer;">Cancelar</button>
+            <button class="btn-close-modal" style="width:100%; padding:10px; background:transparent; border:none; color:#aaa; cursor:pointer;">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="modal-proposta" class="modal-overlay oculto">
+        <div class="modal-box">
+            <h3>Enviar Proposta</h3>
+            <form id="formProposta">
+                <input type="hidden" id="prop-id">
+                <input type="number" id="prop-valor" placeholder="Valor (R$)" required>
+                <textarea id="prop-msg" placeholder="Detalhes..." required></textarea>
+                <button type="submit" class="btn-primary btn-admin">Enviar no WhatsApp</button>
+            </form>
+            <button class="btn-close-modal" style="width:100%; padding:10px; background:transparent; border:none; color:#aaa; cursor:pointer;">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="modal-contraproposta" class="modal-overlay oculto">
+        <div class="modal-box">
+            <h3 style="color:var(--status-contra);">Fazer Contraproposta</h3>
+            <form id="formContra">
+                <input type="hidden" id="contra-id">
+                <input type="number" id="contra-valor" placeholder="Sua oferta (R$)" required>
+                <textarea id="contra-msg" placeholder="Motivo..." required></textarea>
+                <button type="submit" class="btn-primary" style="background:var(--status-contra);">Enviar Oferta</button>
+            </form>
+            <button class="btn-close-modal" style="width:100%; padding:10px; background:transparent; border:none; color:#aaa; cursor:pointer;">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="modal-pagamento" class="modal-overlay oculto">
+        <div class="modal-box" style="text-align:center;">
+            <h3>Realizar Pagamento</h3>
+            <p style="color:#aaa; font-size:14px;">Faça um PIX para a chave abaixo:</p>
+            <div id="display-valor-pix" style="font-size:24px; color:var(--status-pago); font-weight:bold; margin:10px 0;">R$ 0,00</div>
+            <div class="pix-display-key"><span id="display-chave-pix">CARREGANDO...</span></div>
+            <button id="btn-copiar" class="btn-primary" style="background:#333;">Copiar Chave</button>
+            
+            <div style="margin-top:20px; border-top:1px dashed #444; padding-top:15px; text-align:left;">
+                <p style="font-size:12px; color:#aaa;">⚠️ Anexe o comprovante:</p>
+                <label for="pay-file" class="custom-file-upload">📎 Enviar Comprovante</label>
+                <input type="file" id="pay-file" accept="image/*,.pdf">
+                <div id="pay-file-display" style="font-size:11px; color:#888; margin-top:5px; text-align:center;">Nenhum arquivo</div>
+                <input type="hidden" id="pay-file-base64">
+            </div>
+            <button id="btn-confirmar-pag" class="btn-primary" style="background:var(--status-pago); margin-top:10px;" disabled>Já Fiz o Pagamento</button>
+            <button class="btn-close-modal" style="width:100%; padding:10px; background:transparent; border:none; color:#aaa; cursor:pointer;">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="modal-entrega" class="modal-overlay oculto">
+        <div class="modal-box">
+            <h3>Entregar Trabalho</h3>
+            <label for="entrega-file" class="custom-file-upload">📎 Anexar Resolução (PDF, ZIP, IMG...)</label>
+            <input type="file" id="entrega-file" accept=".pdf, .png, .jpg, .jpeg, .zip, .rar, image/*">
+            <div id="entrega-file-display" style="font-size:11px; color:#888; margin-top:5px;">Nenhum arquivo</div>
+            <input type="hidden" id="entrega-file-base64">
+            <button id="btn-confirmar-entrega" class="btn-primary" style="margin-top:15px;" disabled>Finalizar e Entregar</button>
+            <button class="btn-close-modal" style="width:100%; padding:10px; background:transparent; border:none; color:#aaa; cursor:pointer;">Cancelar</button>
         </div>
     </div>
 
     <div id="modal-reclamacao" class="modal-overlay oculto">
         <div class="modal-box">
-            <h3 style="color:#d32f2f;">Registrar Reclamação</h3>
+            <h3 style="color:var(--danger);">Registrar Problema</h3>
             <form id="formReclamacao" style="margin-top:15px;">
                 <input type="text" id="rec-titulo" placeholder="Assunto" required>
-                <textarea id="rec-msg" placeholder="Descreva o ocorrido..." required style="height:100px;"></textarea>
-                <button type="submit" class="btn-primary btn-danger">Enviar Reclamação</button>
+                <textarea id="rec-msg" placeholder="Descreva o problema..." required style="height:100px;"></textarea>
+                <button type="submit" class="btn-primary btn-danger">Enviar</button>
             </form>
-            <button class="btn-close-modal" style="margin-top:10px; color:#aaa; width:100%; border:none; background:transparent; cursor:pointer;">Cancelar</button>
+            <button class="btn-close-modal" style="width:100%; padding:10px; background:transparent; border:none; color:#aaa; cursor:pointer;">Cancelar</button>
         </div>
     </div>
 
@@ -284,86 +345,17 @@
             <div class="rating-stars" id="star-container">
                 <span class="star" data-val="1">★</span><span class="star" data-val="2">★</span><span class="star" data-val="3">★</span><span class="star" data-val="4">★</span><span class="star" data-val="5">★</span>
             </div>
-            <textarea id="aval-msg" placeholder="Comentário..." style="height:80px; margin-top:10px;"></textarea>
-            <button id="btn-enviar-aval" class="btn-primary">Enviar Avaliação</button>
-            <button class="btn-close-modal" style="margin-top:10px; color:#aaa; width:100%; border:none; background:transparent; cursor:pointer;">Cancelar</button>
+            <textarea id="aval-msg" placeholder="Comentário..." style="height:80px;"></textarea>
+            <button id="btn-enviar-aval" class="btn-primary" style="margin-top:10px;">Enviar</button>
+            <button class="btn-close-modal" style="width:100%; padding:10px; background:transparent; border:none; color:#aaa; cursor:pointer;">Cancelar</button>
         </div>
     </div>
 
     <div id="modal-qualificacoes" class="modal-overlay oculto">
         <div class="modal-box">
             <h3>Sobre o Guru</h3>
-            <div id="qualificacoes-texto" style="margin-top:15px; color:#ccc; line-height:1.5; white-space: pre-wrap; margin-bottom:20px;"></div>
-            
-            <div style="display:flex; gap:10px; margin-bottom:20px;">
-                <a id="btn-link-lattes" href="#" target="_blank" class="btn-primary" style="text-align:center; text-decoration:none; background:#333; flex:1; border:1px solid #555;">🌐 Acessar Lattes</a>
-                <a id="btn-link-pdf" href="#" download="Curriculo_Guru.pdf" class="btn-primary" style="text-align:center; text-decoration:none; background:#333; flex:1; border:1px solid #555;">📄 Baixar Currículo PDF</a>
-            </div>
-
-            <h4 style="border-top:1px solid #333; padding-top:15px; margin-bottom:15px; color:#ffeb3b;">Avaliações dos Alunos</h4>
-            <div id="lista-avaliacoes-publicas" style="max-height:200px; overflow-y:auto; padding-right:5px;">
-                </div>
-
-            <button class="btn-close-modal" style="margin-top:20px; color:#aaa; width:100%; border:none; background:transparent; cursor:pointer;">Fechar</button>
-        </div>
-    </div>
-
-    <div id="modal-proposta" class="modal-overlay oculto">
-        <div class="modal-box">
-            <h3>Enviar Proposta</h3>
-            <p style="font-size:13px; color:#888;">Somente via WhatsApp.</p>
-            <form id="formProposta">
-                <input type="hidden" id="prop-id">
-                <input type="number" id="prop-valor" placeholder="Valor (R$)" required>
-                <textarea id="prop-msg" placeholder="Detalhes..." required></textarea>
-                <button type="submit" class="btn-primary btn-admin">Enviar no WhatsApp</button>
-            </form>
-            <button class="btn-close-modal" style="margin-top:10px; color:#aaa; border:none; background:transparent;">Cancelar</button>
-        </div>
-    </div>
-
-    <div id="modal-contraproposta" class="modal-overlay oculto">
-        <div class="modal-box">
-            <h3 style="color:#9c27b0;">Contraproposta</h3>
-            <form id="formContra">
-                <input type="hidden" id="contra-id">
-                <input type="number" id="contra-valor" placeholder="Valor (R$)" required>
-                <textarea id="contra-msg" placeholder="Motivo..." required></textarea>
-                <button type="submit" class="btn-primary" style="background:#9c27b0;">Enviar Oferta</button>
-            </form>
-            <button class="btn-close-modal" style="margin-top:10px; color:#aaa; border:none; background:transparent;">Cancelar</button>
-        </div>
-    </div>
-
-    <div id="modal-pagamento" class="modal-overlay oculto">
-        <div class="modal-box" style="text-align: center;">
-            <h3>Dados para Pagamento</h3>
-            <p style="color:#aaa; font-size:14px; margin-bottom:10px;">Faça um PIX manual para a chave abaixo:</p>
-            <div id="display-valor-pix" style="font-size:24px; color:#4caf50; font-weight:bold; margin:10px 0;">R$ 0,00</div>
-            <div class="pix-display-key"><span id="display-chave-pix">CARREGANDO...</span></div>
-            <button id="btn-copiar" class="btn-primary" style="background:#333;">Copiar Chave</button>
-            <div style="margin-top:20px; border-top:1px dashed #444; padding-top:15px; text-align:left;">
-                <p style="font-size:12px; color:#aaa; margin-bottom:5px;">⚠️ Obrigatório: Anexar Comprovante</p>
-                <label for="pay-file" class="custom-file-upload">📎 Enviar Comprovante (Foto/PDF)</label>
-                <input type="file" id="pay-file" accept="image/*,.pdf">
-                <div id="pay-file-display" style="font-size:11px; color:#888; margin-top:5px;">Nenhum arquivo</div>
-                <input type="hidden" id="pay-file-base64">
-            </div>
-            <button id="btn-confirmar-pag" class="btn-primary" style="background:#4caf50;" disabled>Já Fiz o Pagamento</button>
-            <button class="btn-close-modal" style="margin-top:10px; color:#aaa; border:none; background:transparent;">Cancelar</button>
-        </div>
-    </div>
-
-    <div id="modal-entrega" class="modal-overlay oculto">
-        <div class="modal-box">
-            <h3>Entregar Trabalho</h3>
-            <p style="font-size:13px; color:#aaa;">Envie o arquivo final.</p>
-            <label for="entrega-file" class="custom-file-upload" style="margin-top:15px;">📎 Anexar Resolução (PDF, PNG, JPG, ZIP...)</label>
-            <input type="file" id="entrega-file" accept=".pdf, .png, .jpg, .jpeg, .zip, .rar, image/*">
-            <div id="entrega-file-display" style="font-size:11px; color:#888; margin-top:5px;">Nenhum arquivo</div>
-            <input type="hidden" id="entrega-file-base64">
-            <button id="btn-confirmar-entrega" class="btn-primary" style="background:#607d8b; margin-top:15px;" disabled>Finalizar e Entregar</button>
-            <button class="btn-close-modal" style="margin-top:10px; color:#aaa; border:none; background:transparent;">Cancelar</button>
+            <div id="qualificacoes-texto" style="margin-top:15px; color:#ccc; line-height:1.5; white-space: pre-wrap;"></div>
+            <button class="btn-close-modal" style="width:100%; padding:10px; background:transparent; border:none; color:#aaa; cursor:pointer;">Fechar</button>
         </div>
     </div>
 
@@ -371,24 +363,27 @@
         <div class="modal-box">
             <h3>Ajuda</h3>
             <details class="faq-item"><summary>Pagamentos?</summary><p>Via PIX manual.</p></details>
-            <div class="danger-zone"><button id="btn-iniciar-exclusao" class="btn-primary btn-danger">Excluir Conta</button></div>
-            <button class="btn-close-modal" style="margin-top:10px; color:#aaa; border:none; background:transparent;">Fechar</button>
+            <div class="danger-zone" style="margin-top:20px; border-top:1px solid #333; padding-top:10px;">
+                <button id="btn-iniciar-exclusao" class="btn-primary btn-danger">Excluir Minha Conta</button>
+            </div>
+            <button class="btn-close-modal" style="width:100%; padding:10px; background:transparent; border:none; color:#aaa; cursor:pointer;">Fechar</button>
         </div>
     </div>
+
     <div id="modal-exclusao" class="modal-overlay oculto">
         <div class="modal-box">
-            <h3 style="color:#d32f2f;">Excluir Conta</h3>
+            <h3 style="color:var(--danger);">Excluir Conta</h3>
             <form id="formExclusao">
                 <select id="exc-motivo" required><option value="">Motivo...</option><option>Preço</option><option>Outro</option></select>
-                <button type="submit" class="btn-primary btn-danger">Confirmar</button>
+                <button type="submit" class="btn-primary btn-danger">Confirmar Exclusão</button>
             </form>
-            <button class="btn-close-modal" style="margin-top:10px; color:#aaa; border:none; background:transparent;">Cancelar</button>
+            <button class="btn-close-modal" style="width:100%; padding:10px; background:transparent; border:none; color:#aaa; cursor:pointer;">Cancelar</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc, setDoc, getDoc, deleteDoc, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDZHpdplfEEPJAN_tvte37k9sXALutykUs", authDomain: "gurueletrica-5f494.firebaseapp.com", projectId: "gurueletrica-5f494", storageBucket: "gurueletrica-5f494.firebasestorage.app", messagingSenderId: "561793673334", appId: "1:561793673334:web:a68a9a603ae08875c59757" };
         const app = initializeApp(firebaseConfig);
@@ -396,11 +391,13 @@
         
         let GLOBAL_CHAVE_PIX = "ggustavo0011@gmail.com"; 
         const GURU_EMAIL = "ggustavo0011@gmail.com"; 
+        
         if(!localStorage.getItem('guruPass')) { localStorage.setItem('guruPass', 'admin123'); }
 
         let usuarioAtual = null; 
         let filtroAtual = 'aberto'; 
         
+        // --- NAVEGAÇÃO E AUTENTICAÇÃO ---
         const telas = { login: document.getElementById('tela-acesso'), dash: document.getElementById('tela-dashboard') };
         
         document.getElementById('link-cadastro').onclick = () => { document.getElementById('box-login').classList.add('oculto'); document.getElementById('box-cadastro').classList.remove('oculto'); };
@@ -429,7 +426,7 @@
                     usuarioAtual = salvo;
                     iniciarSistema();
                 } else {
-                    alert('Login incorreto!');
+                    alert('Dados incorretos.');
                 }
             }
         };
@@ -446,17 +443,16 @@
                 document.getElementById('nav-fazer-reclamacao').classList.add('oculto');
                 document.getElementById('btn-novo-pedido').classList.add('oculto');
                 document.getElementById('mini-guru-card').classList.add('oculto');
-                document.getElementById('btn-admin-recl').classList.remove('oculto');
             } else {
                 document.getElementById('nav-config-guru').classList.add('oculto');
                 document.getElementById('nav-reclamacoes').classList.add('oculto');
-                document.getElementById('btn-admin-recl').classList.add('oculto');
             }
 
             lerPedidosDoFirebase();
             carregarPerfilPublicoGuru(); 
         }
 
+        // --- SPA NAVIGATION ---
         const views = { pedidos: document.getElementById('view-pedidos'), perfilAluno: document.getElementById('view-perfil-aluno'), configGuru: document.getElementById('view-config-guru'), reclamacoes: document.getElementById('view-reclamacoes') };
         function switchView(name) { Object.values(views).forEach(v => v.classList.add('oculto')); views[name].classList.remove('oculto'); }
 
@@ -475,6 +471,7 @@
             btn.onclick = () => { document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active')); btn.classList.add('active'); filtroAtual = btn.getAttribute('data-tab'); lerPedidosDoFirebase(); };
         });
 
+        // --- SISTEMA DE PEDIDOS ---
         function lerPedidosDoFirebase() {
             onSnapshot(query(collection(db, "pedidos"), orderBy("data", "desc")), (snapshot) => {
                 const lista = document.getElementById('lista-pedidos'); lista.innerHTML = "";
@@ -545,10 +542,6 @@
                             if(usuarioAtual.role === 'student' && p.status !== 'Avaliado') {
                                 html += `<button onclick="window.avaliarGuru('${pid}')" class="btn-secondary" style="width:100%;">Avaliar</button>`;
                             }
-                            if(p.status === 'Avaliado') {
-                                let st = "★".repeat(p.avaliacao.nota);
-                                html += `<div style="color:#ffeb3b; font-size:12px; margin-top:5px;">${st} "${p.avaliacao.msg}"</div>`;
-                            }
                         }
                     } else if(usuarioAtual.role === 'guru') {
                         html += `<button class="btn-primary" onclick="abrirModalProposta('${pid}', {zapAluno:'${p.zapAluno}', titulo:'${p.titulo}'})" style="width:100%;">Fazer Proposta</button>`;
@@ -573,7 +566,7 @@
             document.getElementById(idInput).addEventListener('change', function(e) {
                 const f = e.target.files[0];
                 if(f) {
-                    if(f.size > 2097152) { alert("Arquivo muito grande (Max 2MB)"); return; }
+                    if(f.size > 2097152) { alert("Max 2MB"); return; } // 2MB
                     document.getElementById(idDisplay).innerText = f.name;
                     const r = new FileReader();
                     r.onload = (ev) => { document.getElementById(idHidden).value = ev.target.result; if(btnId) document.getElementById(btnId).disabled = false; };
@@ -585,126 +578,48 @@
         handleUpload('pay-file', 'pay-file-base64', 'pay-file-display', 'btn-confirmar-pag');
         handleUpload('entrega-file', 'entrega-file-base64', 'entrega-file-display', 'btn-confirmar-entrega');
         handleUpload('upload-foto', 'conf-img-base64', 'preview-avatar');
-        handleUpload('upload-pdf-curriculo', 'conf-pdf-base64', 'display-pdf-name');
 
         // --- ACTIONS ---
         document.getElementById('btn-novo-pedido').onclick = () => document.getElementById('modal-pedido').classList.remove('oculto');
         document.getElementById('formPedido').onsubmit = async (e) => { e.preventDefault(); try { await addDoc(collection(db, "pedidos"), { aluno: usuarioAtual.nome, emailAluno: usuarioAtual.email, zapAluno: usuarioAtual.zap, materia: document.getElementById('ped-materia').value, titulo: document.getElementById('ped-titulo').value, desc: document.getElementById('ped-desc').value, arquivo: document.getElementById('ped-file-base64').value || null, nomeArquivo: document.getElementById('file-name-display').innerText !== "Nenhum arquivo" ? document.getElementById('file-name-display').innerText : null, data: Date.now(), status: 'Em Análise', proposta: null }); alert("Enviado!"); document.querySelector('#modal-pedido .btn-close-modal').click(); e.target.reset(); } catch(err){ alert("Erro"); } };
 
-        let pedidoEmEdicao = null; let idPedidoEmEdicao = null;
-        window.abrirModalProposta = (id, dados) => { idPedidoEmEdicao = id; pedidoEmEdicao = dados; document.getElementById('modal-proposta').classList.remove('oculto'); };
-        document.getElementById('formProposta').onsubmit = async (e) => { e.preventDefault(); const v = document.getElementById('prop-valor').value; const m = document.getElementById('prop-msg').value; await updateDoc(doc(db, "pedidos", idPedidoEmEdicao), { status: "Proposta Recebida", proposta: { valor: v, msg: m } }); const zl = pedidoEmEdicao.zapAluno ? pedidoEmEdicao.zapAluno.replace(/\D/g,"") : ""; const txt = `Olá! Sou o Guru.\nAnalisei: ${pedidoEmEdicao.titulo}\nProposta: R$ ${v}\nDetalhes: ${m}`; if(zl)window.open(`https://wa.me/55${zl}?text=${encodeURIComponent(txt)}`,'_blank'); document.getElementById('modal-proposta').classList.add('oculto'); };
+        let pedidoEmEdicao=null; let idPedidoEmEdicao=null;
+        window.abrirModalProposta=(id,dados)=>{ idPedidoEmEdicao=id; pedidoEmEdicao=dados; document.getElementById('modal-proposta').classList.remove('oculto'); };
+        document.getElementById('formProposta').onsubmit=async(e)=>{ e.preventDefault(); const v=document.getElementById('prop-valor').value; const m=document.getElementById('prop-msg').value; await updateDoc(doc(db,"pedidos",idPedidoEmEdicao),{status:"Proposta Recebida",proposta:{valor:v,msg:m}}); const zl=pedidoEmEdicao.zapAluno?pedidoEmEdicao.zapAluno.replace(/\D/g,""):""; const txt=`Olá! Sou o Guru.\nAnalisei: ${pedidoEmEdicao.titulo}\nProposta: R$ ${v}\nDetalhes: ${m}`; if(zl)window.open(`https://wa.me/55${zl}?text=${encodeURIComponent(txt)}`,'_blank'); document.getElementById('modal-proposta').classList.add('oculto'); };
 
-        let idPedidoContra = null;
-        window.abrirModalContra = (id) => { idPedidoContra = id; document.getElementById('modal-contraproposta').classList.remove('oculto'); };
-        document.getElementById('formContra').onsubmit = async (e) => { e.preventDefault(); await updateDoc(doc(db, "pedidos", idPedidoContra), { status: "Contraproposta", contraproposta: { valor: document.getElementById('contra-valor').value, msg: document.getElementById('contra-msg').value } }); alert("Enviado!"); document.getElementById('modal-contraproposta').classList.add('oculto'); };
-        window.aceitarContraproposta = async (id, nv) => { if(confirm(`Aceitar oferta de R$ ${nv}?`)) { await updateDoc(doc(db, "pedidos", id), { status: "Proposta Recebida", "proposta.valor": nv, "proposta.msg": "Oferta aceita pelo Guru!" }); } };
+        let idPedidoContra=null;
+        window.abrirModalContra=(id)=>{ idPedidoContra=id; document.getElementById('modal-contraproposta').classList.remove('oculto'); };
+        document.getElementById('formContra').onsubmit=async(e)=>{ e.preventDefault(); await updateDoc(doc(db,"pedidos",idPedidoContra),{status:"Contraproposta",contraproposta:{valor:document.getElementById('contra-valor').value,msg:document.getElementById('contra-msg').value}}); alert("Enviado!"); document.getElementById('modal-contraproposta').classList.add('oculto'); };
+        window.aceitarContraproposta=async(id,nv)=>{ if(confirm(`Aceitar oferta de R$ ${nv}?`)){ await updateDoc(doc(db,"pedidos",id),{status:"Proposta Recebida","proposta.valor":nv,"proposta.msg":"Oferta aceita pelo Guru!"}); } };
 
-        let idPedidoPagamento = null;
-        window.abrirModalPagamento = (id, v) => { idPedidoPagamento = id; document.getElementById('modal-pagamento').classList.remove('oculto'); document.getElementById('display-valor-pix').innerText = `R$ ${v}`; document.getElementById('display-chave-pix').innerText = GLOBAL_CHAVE_PIX; };
-        document.getElementById('btn-copiar').onclick = () => navigator.clipboard.writeText(GLOBAL_CHAVE_PIX).then(()=>alert("Copiado!"));
-        document.getElementById('btn-confirmar-pag').onclick = async () => { if(!idPedidoPagamento) return; const comp = document.getElementById('pay-file-base64').value; await updateDoc(doc(db, "pedidos", idPedidoPagamento), { status: "Verificando Pagamento", comprovante: comp }); alert("Enviado para análise!"); document.getElementById('modal-pagamento').classList.add('oculto'); };
-        window.aprovarPagamento = async (id) => { if(confirm("Dinheiro na conta?")) await updateDoc(doc(db, "pedidos", id), { status: "Pago" }); };
-        window.recusarPagamento = async (id) => { if(confirm("Marcar Inválido?")) await updateDoc(doc(db, "pedidos", id), { status: "Pagamento Recusado" }); };
+        let idPedidoPagamento=null;
+        window.abrirModalPagamento=(id,v)=>{ idPedidoPagamento=id; document.getElementById('modal-pagamento').classList.remove('oculto'); document.getElementById('display-valor-pix').innerText=`R$ ${v}`; document.getElementById('display-chave-pix').innerText=GLOBAL_CHAVE_PIX; };
+        document.getElementById('btn-copiar').onclick=()=>navigator.clipboard.writeText(GLOBAL_CHAVE_PIX).then(()=>alert("Copiado!"));
+        document.getElementById('btn-confirmar-pag').onclick=async()=>{ if(!idPedidoPagamento)return; const comp=document.getElementById('pay-file-base64').value; await updateDoc(doc(db,"pedidos",idPedidoPagamento),{status:"Verificando Pagamento",comprovante:comp}); alert("Enviado!"); document.getElementById('modal-pagamento').classList.add('oculto'); };
+        window.aprovarPagamento=async(id)=>{ if(confirm("Dinheiro na conta?")) await updateDoc(doc(db,"pedidos",id),{status:"Pago"}); };
+        window.recusarPagamento=async(id)=>{ if(confirm("Marcar Inválido?")) await updateDoc(doc(db,"pedidos",id),{status:"Pagamento Recusado"}); };
 
-        let idPedidoEntrega = null;
-        window.abrirModalEntrega = (id) => { idPedidoEntrega = id; document.getElementById('modal-entrega').classList.remove('oculto'); };
-        document.getElementById('btn-confirmar-entrega').onclick = async () => { const arq = document.getElementById('entrega-file-base64').value; await updateDoc(doc(db, "pedidos", idPedidoEntrega), { status: "Finalizado", arquivoResolucao: arq }); alert("Entregue!"); document.getElementById('modal-entrega').classList.add('oculto'); };
+        let idPedidoEntrega=null;
+        window.abrirModalEntrega=(id)=>{ idPedidoEntrega=id; document.getElementById('modal-entrega').classList.remove('oculto'); };
+        document.getElementById('btn-confirmar-entrega').onclick=async()=>{ const arq=document.getElementById('entrega-file-base64').value; await updateDoc(doc(db,"pedidos",idPedidoEntrega),{status:"Finalizado",arquivoResolucao:arq}); alert("Entregue!"); document.getElementById('modal-entrega').classList.add('oculto'); };
 
-        let idAvaliacao = null; let notaAvaliacao = 5;
-        window.avaliarGuru = (id) => { idAvaliacao = id; document.getElementById('modal-avaliacao').classList.remove('oculto'); };
-        document.querySelectorAll('.star').forEach(s => { s.onclick = function() { notaAvaliacao = this.getAttribute('data-val'); document.querySelectorAll('.star').forEach(st => st.classList.toggle('selected', st.getAttribute('data-val') <= notaAvaliacao)); } });
-        document.getElementById('btn-enviar-aval').onclick = async () => { await updateDoc(doc(db, "pedidos", idAvaliacao), { status: "Avaliado", avaliacao: { nota: notaAvaliacao, msg: document.getElementById('aval-msg').value } }); alert("Avaliado!"); document.getElementById('modal-avaliacao').classList.add('oculto'); };
+        let idAvaliacao=null; let notaAvaliacao=5;
+        window.avaliarGuru=(id)=>{ idAvaliacao=id; document.getElementById('modal-avaliacao').classList.remove('oculto'); };
+        document.querySelectorAll('.star').forEach(s=>{ s.onclick=function(){ notaAvaliacao=this.getAttribute('data-val'); document.querySelectorAll('.star').forEach(st=>st.classList.toggle('selected', st.getAttribute('data-val')<=notaAvaliacao)); } });
+        document.getElementById('btn-enviar-aval').onclick=async()=>{ await updateDoc(doc(db,"pedidos",idAvaliacao),{status:"Avaliado",avaliacao:{nota:notaAvaliacao,msg:document.getElementById('aval-msg').value}}); alert("Avaliado!"); document.getElementById('modal-avaliacao').classList.add('oculto'); };
         
-        document.getElementById('formReclamacao').onsubmit = async (e) => { e.preventDefault(); await addDoc(collection(db, "reclamacoes"), { aluno: usuarioAtual.nome, email: usuarioAtual.email, zap: usuarioAtual.zap, titulo: document.getElementById('rec-titulo').value, msg: document.getElementById('rec-msg').value, data: Date.now() }); alert("Registrado."); document.getElementById('modal-reclamacao').classList.add('oculto'); };
+        document.getElementById('formReclamacao').onsubmit=async(e)=>{ e.preventDefault(); await addDoc(collection(db,"reclamacoes"),{aluno:usuarioAtual.nome,email:usuarioAtual.email,zap:usuarioAtual.zap,titulo:document.getElementById('rec-titulo').value,msg:document.getElementById('rec-msg').value,data:Date.now()}); alert("Registrado."); document.getElementById('modal-reclamacao').classList.add('oculto'); };
         
-        function lerReclamacoes() {
-            onSnapshot(query(collection(db, "reclamacoes"), orderBy("data", "desc")), (snapshot) => {
-                const lista = document.getElementById('lista-reclamacoes-admin'); lista.innerHTML = "";
-                snapshot.forEach((docSnap) => {
-                    const r = docSnap.data(); const div = document.createElement('div'); div.className = 'reclamacao-card';
-                    div.innerHTML = `<button class="btn-delete-req" onclick="excluirReclamacao('${docSnap.id}')">✅</button><div style="font-weight:bold; color:var(--danger);">${r.titulo}</div><div style="font-size:12px; color:#aaa;">${r.aluno} (${r.zap})</div><div style="color:#ddd;">"${r.msg}"</div>`;
-                    lista.appendChild(div);
-                });
-                if(lista.children.length===0) lista.innerHTML='<div style="padding:20px; text-align:center; color:#555;">Sem reclamações.</div>';
-            });
-        }
-        window.excluirReclamacao = async(id) => { if(confirm("Resolver?")) await deleteDoc(doc(db,"reclamacoes",id)); };
+        function lerReclamacoes(){ onSnapshot(query(collection(db,"reclamacoes"),orderBy("data","desc")),(snapshot)=>{ const lista=document.getElementById('lista-reclamacoes-admin'); lista.innerHTML=""; snapshot.forEach((docSnap)=>{ const r=docSnap.data(); const div=document.createElement('div'); div.className='request-card'; div.innerHTML=`<button class="btn-delete-req" onclick="excluirReclamacao('${docSnap.id}')">✅</button><div style="font-weight:bold; color:var(--danger);">${r.titulo}</div><div style="font-size:12px; color:#aaa;">${r.aluno} (${r.zap})</div><div style="color:#ddd;">"${r.msg}"</div>`; lista.appendChild(div); }); if(lista.children.length===0) lista.innerHTML='<div style="padding:20px; text-align:center; color:#555;">Sem reclamações.</div>'; }); }
+        window.excluirReclamacao=async(id)=>{ if(confirm("Resolver?")) await deleteDoc(doc(db,"reclamacoes",id)); };
 
-        // Perfil Aluno
-        document.getElementById('formPerfilAluno').onsubmit = (e) => { e.preventDefault(); usuarioAtual.nome = document.getElementById('perf-nome').value; usuarioAtual.zap = document.getElementById('perf-zap').value; usuarioAtual.curso = document.getElementById('perf-curso').value; usuarioAtual.bio = document.getElementById('perf-bio').value; localStorage.setItem('guruUser_'+usuarioAtual.email, JSON.stringify(usuarioAtual)); alert("Salvo!"); document.getElementById('nav-pedidos').click(); };
+        document.getElementById('formPerfilAluno').onsubmit=(e)=>{ e.preventDefault(); usuarioAtual.nome=document.getElementById('perf-nome').value; usuarioAtual.zap=document.getElementById('perf-zap').value; usuarioAtual.curso=document.getElementById('perf-curso').value; usuarioAtual.bio=document.getElementById('perf-bio').value; localStorage.setItem('guruUser_'+usuarioAtual.email, JSON.stringify(usuarioAtual)); alert("Salvo!"); document.getElementById('nav-pedidos').click(); };
 
-        // PERFIL GURU (LOAD + REVIEWS)
-        async function carregarPerfilPublicoGuru() { 
-            const d = await getDoc(doc(db, "config_site", "perfil_guru")); 
-            if(d.exists()){ 
-                const dd = d.data(); 
-                if(dd.pix) GLOBAL_CHAVE_PIX = dd.pix;
-                const im = dd.imgBase64 || "https://cdn-icons-png.flaticon.com/512/609/609032.png"; 
-                document.getElementById('guru-avatar-img').style.backgroundImage = `url('${im}')`; 
-                document.getElementById('header-guru-img').style.backgroundImage = `url('${im}')`; 
-                document.getElementById('guru-title').innerText = dd.titulo; 
-                document.getElementById('guru-subtitle').innerText = dd.sub; 
-                
-                if(usuarioAtual && usuarioAtual.role==='guru') { 
-                    document.getElementById('preview-avatar').style.backgroundImage = `url('${im}')`; 
-                    document.getElementById('conf-img-base64').value = im; 
-                    document.getElementById('conf-pdf-base64').value = dd.pdfBase64 || "";
-                    document.getElementById('conf-bio').value = dd.bio; 
-                    document.getElementById('conf-titulo').value = dd.titulo; 
-                    document.getElementById('conf-sub').value = dd.sub; 
-                    document.getElementById('conf-lattes').value = dd.lattes || "";
-                    document.getElementById('conf-pix').value = dd.pix || "";
-                } 
-                
-                document.getElementById('btn-ver-quali-header').onclick = document.getElementById('btn-ver-quali').onclick = async () => { 
-                    document.getElementById('qualificacoes-texto').innerText = dd.bio || "Sem info.";
-                    
-                    const btnLattes = document.getElementById('btn-link-lattes');
-                    if(dd.lattes) { btnLattes.href = dd.lattes; btnLattes.style.display = 'block'; } else { btnLattes.style.display = 'none'; }
+        async function carregarPerfilPublicoGuru(){ const d=await getDoc(doc(db,"config_site","perfil_guru")); if(d.exists()){ const dd=d.data(); if(dd.pix) GLOBAL_CHAVE_PIX=dd.pix; const im=dd.imgBase64||"https://cdn-icons-png.flaticon.com/512/609/609032.png"; document.getElementById('header-guru-img').style.backgroundImage=`url('${im}')`; if(usuarioAtual && usuarioAtual.role==='guru'){ document.getElementById('preview-avatar').style.backgroundImage=`url('${im}')`; document.getElementById('conf-img-base64').value=im; document.getElementById('conf-bio').value=dd.bio; document.getElementById('conf-titulo').value=dd.titulo; document.getElementById('conf-sub').value=dd.sub; document.getElementById('conf-pix').value=dd.pix||""; } document.getElementById('btn-ver-quali-header').onclick=()=>{ document.getElementById('qualificacoes-texto').innerText=dd.bio||"Sem info."; document.getElementById('modal-qualificacoes').classList.remove('oculto'); }; } }
+        document.getElementById('formConfigGuru').onsubmit=async(e)=>{ e.preventDefault(); await setDoc(doc(db,"config_site","perfil_guru"),{ titulo:document.getElementById('conf-titulo').value, sub:document.getElementById('conf-sub').value, bio:document.getElementById('conf-bio').value, imgBase64:document.getElementById('conf-img-base64').value, pix:document.getElementById('conf-pix').value }); const ns=document.getElementById('conf-senha').value; if(ns){ localStorage.setItem('guruPass',ns); alert("Senha alterada!"); } else { alert("Salvo!"); } carregarPerfilPublicoGuru(); document.getElementById('nav-pedidos').click(); };
 
-                    const btnPdf = document.getElementById('btn-link-pdf');
-                    if(dd.pdfBase64) { btnPdf.href = dd.pdfBase64; btnPdf.style.display = 'block'; } else { btnPdf.style.display = 'none'; }
-
-                    const listaAval = document.getElementById('lista-avaliacoes-publicas');
-                    listaAval.innerHTML = '<div style="color:#666; text-align:center;">Carregando...</div>';
-                    
-                    const q = query(collection(db, "pedidos"), where("status", "==", "Avaliado"));
-                    onSnapshot(q, (snapshot) => {
-                        listaAval.innerHTML = "";
-                        if(snapshot.empty) { listaAval.innerHTML = '<div style="color:#666; text-align:center;">Nenhuma avaliação ainda.</div>'; return; }
-                        snapshot.forEach(doc => {
-                            const r = doc.data();
-                            const stars = "★".repeat(r.avaliacao.nota);
-                            listaAval.innerHTML += `<div class="review-item"><div class="review-header"><span>${r.aluno.split(' ')[0]}</span> <span class="review-stars">${stars}</span></div><div style="font-size:13px; color:#ddd;">"${r.avaliacao.msg}"</div></div>`;
-                        });
-                    });
-                    document.getElementById('modal-qualificacoes').classList.remove('oculto'); 
-                }; 
-            } 
-        }
-
-        document.getElementById('formConfigGuru').onsubmit = async (e) => { 
-            e.preventDefault(); 
-            await setDoc(doc(db, "config_site", "perfil_guru"), { 
-                titulo: document.getElementById('conf-titulo').value, 
-                sub: document.getElementById('conf-sub').value, 
-                bio: document.getElementById('conf-bio').value, 
-                imgBase64: document.getElementById('conf-img-base64').value,
-                pdfBase64: document.getElementById('conf-pdf-base64').value,
-                lattes: document.getElementById('conf-lattes').value,
-                pix: document.getElementById('conf-pix').value
-            }); 
-            const ns = document.getElementById('conf-senha').value; 
-            if(ns) { localStorage.setItem('guruPass', ns); alert("Senha alterada!"); } 
-            else { alert("Salvo!"); } 
-            carregarPerfilPublicoGuru(); 
-            document.getElementById('nav-pedidos').click(); 
-        };
-
-        window.deletarPedido = async (id) => { if(confirm("Excluir?")) await deleteDoc(doc(db, "pedidos", id)); };
-        document.querySelectorAll('.btn-close-modal').forEach(b => b.onclick = (e) => { e.preventDefault(); e.target.closest('.modal-overlay').classList.add('oculto'); });
-        document.getElementById('btn-admin-recl').onclick = () => { switchView('reclamacoes'); lerReclamacoes(); };
+        window.deletarPedido=async(id)=>{ if(confirm("Excluir?")) await deleteDoc(doc(db,"pedidos",id)); };
+        document.querySelectorAll('.btn-close-modal').forEach(b=>b.onclick=(e)=>{ e.preventDefault(); e.target.closest('.modal-overlay').classList.add('oculto'); });
     </script>
 </body>
 </html>
