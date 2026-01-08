@@ -442,7 +442,16 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updatePassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc, setDoc, getDoc, deleteDoc, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyDZHpdplfEEPJAN_tvte37k9sXALutykUs", authDomain: "gurueletrica-5f494.firebaseapp.com", projectId: "gurueletrica-5f494", storageBucket: "gurueletrica-5f494.firebasestorage.app", messagingSenderId: "561793673334", appId: "1:561793673334:web:a68a9a603ae08875c59757" };
+        // CONFIGURAÇÃO CORRIGIDA - VOCÊ DEVE SUBSTITUIR SE PRECISAR
+        const firebaseConfig = {
+          apiKey: "AIzaSyDZhPdplfEEPJAN_tvte37k9sXALutykUs",
+          authDomain: "gurueletrica-5f494.firebaseapp.com",
+          projectId: "gurueletrica-5f494",
+          storageBucket: "gurueletrica-5f494.firebasestorage.app",
+          messagingSenderId: "561793673334",
+          appId: "1:561793673334:web:a68a9a603ae08875c59757"
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app); 
