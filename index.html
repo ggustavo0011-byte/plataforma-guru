@@ -439,10 +439,10 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updatePassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updatePassword, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc, setDoc, getDoc, deleteDoc, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // CONFIGURAÇÃO CORRIGIDA - VOCÊ DEVE SUBSTITUIR SE PRECISAR
+        // CONFIGURAÇÃO CORRIGIDA - API KEY ATUALIZADA
         const firebaseConfig = {
           apiKey: "AIzaSyDZhPdplfEEPJAN_tvte37k9sXALutykUs",
           authDomain: "gurueletrica-5f494.firebaseapp.com",
@@ -499,6 +499,8 @@
             const senha = document.getElementById('cad-pass').value;
 
             try {
+                // Ao criar conta, também força persistência de sessão (fecha navegador = desloga)
+                await setPersistence(auth, browserSessionPersistence);
                 const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
                 await setDoc(doc(db, "usuarios", userCredential.user.uid), { nome: nome, email: email, zap: zap, curso: curso, bio: "" });
                 alert("Conta criada com sucesso!");
@@ -510,6 +512,8 @@
         document.getElementById('formLogin').onsubmit = async (e) => {
             e.preventDefault();
             try {
+                // SEGURANÇA: Isso força o logout ao fechar o navegador
+                await setPersistence(auth, browserSessionPersistence);
                 await signInWithEmailAndPassword(auth, document.getElementById('login-user').value.trim(), document.getElementById('login-pass').value.trim());
             } catch (error) {
                 alert("E-mail ou senha inválidos.");
@@ -518,8 +522,16 @@
 
         document.getElementById('link-esqueci').onclick = () => document.getElementById('modal-reset-senha').classList.remove('oculto');
         document.getElementById('btn-enviar-reset').onclick = async () => {
-            try { await sendPasswordResetEmail(auth, document.getElementById('reset-email').value); alert("E-mail enviado!"); document.getElementById('modal-reset-senha').classList.add('oculto'); } 
-            catch (error) { alert("Erro: " + error.message); }
+            try { 
+                await sendPasswordResetEmail(auth, document.getElementById('reset-email').value); 
+                alert("E-mail enviado! Verifique sua caixa de entrada."); 
+                document.getElementById('modal-reset-senha').classList.add('oculto'); 
+            } 
+            catch (error) { 
+                if(error.code === 'auth/user-not-found') alert("E-mail não cadastrado no sistema.");
+                else if(error.code === 'auth/invalid-email') alert("E-mail inválido.");
+                else alert("Erro: " + error.message); 
+            }
         };
 
         document.getElementById('btn-sair').onclick = async () => { await signOut(auth); location.reload(); };
