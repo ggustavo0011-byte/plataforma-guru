@@ -6,10 +6,7 @@
 
     <meta name="google-site-verification" content="uw4onbu5jUlFjqE71aVAImMi3AnurmMkqwKLdBBdpII" />
     <title>Guru da Elétrica - Ajuda em Engenharia e Circuitos</title>
-    <meta name="description" content="Plataforma de ajuda universitária para estudantes de Engenharia Elétrica. Resolução de listas, projetos de circuitos, TCC e consultoria personalizada.">
-    <meta name="keywords" content="engenharia elétrica, circuitos, resolução de exercícios, ajuda tcc, engenharia, reforço escolar, projetos elétricos, guru elétrica">
-    <meta name="author" content="Guru da Elétrica">
-    <meta name="robots" content="index, follow">
+    <meta name="description" content="Plataforma de ajuda universitária para estudantes de Engenharia Elétrica.">
     <style>
         /* --- RESET E BASE --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
@@ -127,38 +124,16 @@
         .star { font-size: 30px; cursor: pointer; color: #444; }
         .star.selected { color: #ffeb3b; }
 
-        /* AVALIAÇÕES NO MODAL DO GURU */
         .review-item { background: #181818; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid var(--primary); }
         .review-header { display: flex; justify-content: space-between; font-size: 12px; color: #aaa; margin-bottom: 5px; }
         .review-stars { color: #ffeb3b; font-size: 14px; }
 
-        /* --- CORREÇÃO PARA CELULAR (LOGO E MENU) --- */
         @media (max-width: 900px) { 
             .left-side-showcase { display: none; } 
             .auth-container { border-left: none; }
             .app-layout { flex-direction: column; }
-            
-            /* Ajuste do cabeçalho móvel */
-            .sidebar { 
-                width: 100%; 
-                height: auto; 
-                flex-direction: row; 
-                padding: 10px; 
-                overflow-x: auto; 
-                border-bottom: 1px solid var(--border); 
-                border-right: none; 
-                align-items: center;
-                justify-content: space-between; /* Espalha itens */
-            }
-            
-            /* Ajuste para o nome não quebrar */
-            .sidebar-logo { 
-                margin-bottom: 0; 
-                margin-right: 15px; 
-                font-size: 18px; 
-                white-space: nowrap; /* Impede quebra de linha */
-            }
-            
+            .sidebar { width: 100%; height: auto; flex-direction: row; padding: 10px; overflow-x: auto; border-bottom: 1px solid var(--border); border-right: none; align-items: center; justify-content: space-between; }
+            .sidebar-logo { margin-bottom: 0; margin-right: 15px; font-size: 18px; white-space: nowrap; }
             .nav-menu { flex-direction: row; }
             .nav-item { padding: 8px 12px; white-space: nowrap; }
             .requests-grid { grid-template-columns: 1fr; }
@@ -194,10 +169,8 @@
                     <h1 class="logo">Criar Conta</h1>
                     <form id="formCadastro">
                         <input type="text" id="cad-nome" placeholder="Nome completo" required>
-                        
                         <input type="email" id="cad-email" placeholder="Email" required>
                         <input type="tel" id="cad-zap" placeholder="WhatsApp (DDD+Num)" required>
-                        
                         <input type="text" id="cad-curso" placeholder="Curso" required>
                         <input type="password" id="cad-pass" placeholder="Senha" required>
                         <button type="submit" class="btn-primary">Cadastrar</button>
@@ -248,11 +221,6 @@
                         <button class="tab-link" data-tab="finalizado">Finalizados</button>
                     </div>
                     <button class="btn-primary" id="btn-novo-pedido" style="width:auto;">+ Novo Pedido</button>
-                </div>
-                <div style="display:flex; gap:10px; margin-bottom:20px; font-size:12px; color:#777;">
-                    <span>Total: <b id="stat-total" style="color:#fff;">0</b></span> |
-                    <span>Abertos: <b id="stat-aberto" style="color:var(--status-analise);">0</b></span> |
-                    <span>Concluídos: <b id="stat-concluido" style="color:var(--status-final);">0</b></span>
                 </div>
                 <div id="lista-pedidos" class="requests-grid"></div>
             </div>
@@ -320,16 +288,12 @@
         <div class="modal-box">
             <h3>Sobre o Guru</h3>
             <div id="qualificacoes-texto" style="margin-top:15px; color:#ccc; line-height:1.5; white-space: pre-wrap; margin-bottom:20px;"></div>
-            
             <div style="display:flex; gap:10px; margin-bottom:20px;">
                 <a id="btn-link-lattes" href="#" target="_blank" class="btn-primary" style="text-align:center; text-decoration:none; background:#333; flex:1; border:1px solid #555; display:none;">🌐 Acessar Lattes</a>
-                <a id="btn-link-pdf" href="#" download="Curriculo_Guru.pdf" class="btn-primary" style="text-align:center; text-decoration:none; background:#333; flex:1; border:1px solid #555; display:none;">📄 Baixar Currículo PDF</a>
+                <a id="btn-link-pdf" href="#" download="Curriculo.pdf" class="btn-primary" style="text-align:center; text-decoration:none; background:#333; flex:1; border:1px solid #555; display:none;">📄 Baixar Currículo PDF</a>
             </div>
-
             <h4 style="border-top:1px solid #333; padding-top:15px; margin-bottom:15px; color:#ffeb3b;">Avaliações dos Alunos</h4>
-            <div id="lista-avaliacoes-publicas" style="max-height:200px; overflow-y:auto; padding-right:5px;">
-                </div>
-
+            <div id="lista-avaliacoes-publicas" style="max-height:200px; overflow-y:auto; padding-right:5px;"></div>
             <button class="btn-close-modal" style="width:100%; padding:10px; background:transparent; border:none; color:#aaa; cursor:pointer; margin-top:20px;">Fechar</button>
         </div>
     </div>
@@ -351,11 +315,13 @@
                 <input type="text" id="ped-materia" placeholder="Matéria" required>
                 <input type="text" id="ped-titulo" placeholder="Título" required>
                 <textarea id="ped-desc" placeholder="Descrição..." style="height:80px;" required></textarea>
-                <label for="ped-file" class="custom-file-upload">📎 Anexar Arquivo (PDF/IMG - Max 500KB)</label>
-                <input type="file" id="ped-file" accept="image/*,.pdf">
+                
+                <label for="ped-file" class="custom-file-upload">📎 Anexar Arquivo (PDF/ZIP/IMG)</label>
+                <input type="file" id="ped-file">
                 <div id="file-name-display" style="font-size:12px; color:#aaa; margin-top:5px; text-align:center;">Nenhum arquivo</div>
-                <input type="hidden" id="ped-file-base64">
-                <button type="submit" class="btn-primary">Enviar</button>
+                <div id="file-warning-display" style="font-size:11px; color:#ffeb3b; margin-top:2px; text-align:center; display:none;">⚠️ Arquivo Grande: Será enviado pelo WhatsApp</div>
+                
+                <button type="submit" class="btn-primary" style="margin-top:10px;">Enviar Pedido</button>
             </form>
             <button class="btn-close-modal" style="width:100%; padding:10px; background:transparent; border:none; color:#aaa; cursor:pointer;">Cancelar</button>
         </div>
@@ -399,7 +365,7 @@
                 <label for="pay-file" class="custom-file-upload">📎 Enviar Comprovante</label>
                 <input type="file" id="pay-file" accept="image/*,.pdf">
                 <div id="pay-file-display" style="font-size:11px; color:#888; margin-top:5px; text-align:center;">Nenhum arquivo</div>
-                <input type="hidden" id="pay-file-base64">
+                <div id="pay-warning-display" style="font-size:11px; color:#ffeb3b; margin-top:2px; text-align:center; display:none;">⚠️ Arquivo Grande: Será enviado pelo WhatsApp</div>
             </div>
             <button id="btn-confirmar-pag" class="btn-primary" style="background:var(--status-pago); margin-top:10px;" disabled>Já Fiz o Pagamento</button>
             <button class="btn-close-modal" style="width:100%; padding:10px; background:transparent; border:none; color:#aaa; cursor:pointer;">Cancelar</button>
@@ -409,10 +375,11 @@
     <div id="modal-entrega" class="modal-overlay oculto">
         <div class="modal-box">
             <h3>Entregar Trabalho</h3>
-            <label for="entrega-file" class="custom-file-upload">📎 Anexar Resolução (PDF, ZIP, IMG...)</label>
-            <input type="file" id="entrega-file" accept=".pdf, .png, .jpg, .jpeg, .zip, .rar, image/*">
+            <label for="entrega-file" class="custom-file-upload">📎 Anexar Resolução</label>
+            <input type="file" id="entrega-file">
             <div id="entrega-file-display" style="font-size:11px; color:#888; margin-top:5px;">Nenhum arquivo</div>
-            <input type="hidden" id="entrega-file-base64">
+            <div id="entrega-warning-display" style="font-size:11px; color:#ffeb3b; margin-top:2px; display:none;">⚠️ Arquivo Grande: Será enviado pelo WhatsApp</div>
+            
             <button id="btn-confirmar-entrega" class="btn-primary" style="margin-top:15px;" disabled>Finalizar e Entregar</button>
             <button class="btn-close-modal" style="width:100%; padding:10px; background:transparent; border:none; color:#aaa; cursor:pointer;">Cancelar</button>
         </div>
@@ -446,14 +413,10 @@
         <div class="modal-box">
             <h3>Ajuda</h3>
             <details class="faq-item"><summary>Pagamentos?</summary><p>Via PIX manual.</p></details>
-            
             <div class="danger-zone" style="margin-top:20px; border-top:1px solid #333; padding-top:10px;">
                 <p style="font-size:12px; color:#aaa; margin-bottom:10px;">Deseja encerrar seu vínculo?</p>
-                <a href="https://wa.me/5583981023942?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20a%20exclus%C3%A3o%20da%20minha%20conta." target="_blank" class="btn-primary btn-danger" style="display:block; text-align:center; text-decoration:none; line-height: 40px;">
-                    Excluir Minha Conta (Falar no WhatsApp)
-                </a>
+                <a href="https://wa.me/5583981023942?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20a%20exclus%C3%A3o%20da%20minha%20conta." target="_blank" class="btn-primary btn-danger" style="display:block; text-align:center; text-decoration:none; line-height: 40px;">Excluir Minha Conta (Falar no WhatsApp)</a>
             </div>
-            
             <button class="btn-close-modal" style="width:100%; padding:10px; background:transparent; border:none; color:#aaa; cursor:pointer;">Fechar</button>
         </div>
     </div>
@@ -463,7 +426,7 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updatePassword, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc, setDoc, getDoc, deleteDoc, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // CONFIGURAÇÃO CORRIGIDA - API KEY ATUALIZADA
+        // CONFIGURAÇÃO
         const firebaseConfig = {
           apiKey: "AIzaSyDZhPdplfEEPJAN_tvte37k9sXALutykUs",
           authDomain: "gurueletrica-5f494.firebaseapp.com",
@@ -479,7 +442,6 @@
         
         let GLOBAL_CHAVE_PIX = "ggustavo0011@gmail.com"; 
         const GURU_EMAIL = "ggustavo0011@gmail.com"; 
-        // O número já está no link HTML, mas mantemos aqui para uso do cadastro
         const GURU_ZAP = "5583981023942"; 
 
         let usuarioAtual = null; 
@@ -510,13 +472,31 @@
             }
         });
 
+        // --- SISTEMA HÍBRIDO (AUTO-DETECTA TAMANHO) ---
+        // Se < 750KB: Retorna Base64. 
+        // Se > 750KB: Retorna instrução para WhatsApp.
+        const LIMITE_BYTES = 750000; // ~750KB
+
+        function lerArquivo(file) {
+            return new Promise((resolve) => {
+                if(!file) { resolve(null); return; }
+                if(file.size > LIMITE_BYTES) {
+                    // Arquivo Grande: Não converte, manda aviso
+                    resolve({ tipo: 'ZAP', dados: null, nome: file.name });
+                } else {
+                    // Arquivo Pequeno: Converte Base64
+                    const r = new FileReader();
+                    r.onload = (e) => resolve({ tipo: 'BASE64', dados: e.target.result, nome: file.name });
+                    r.readAsDataURL(file);
+                }
+            });
+        }
+
         document.getElementById('link-cadastro').onclick = () => { document.getElementById('box-login').classList.add('oculto'); document.getElementById('box-cadastro').classList.remove('oculto'); };
         document.getElementById('link-login').onclick = () => { document.getElementById('box-cadastro').classList.add('oculto'); document.getElementById('box-login').classList.remove('oculto'); };
         
-        // --- ATUALIZAÇÃO: CADASTRO COM NOTIFICAÇÃO DE WHATSAPP ---
         document.getElementById('formCadastro').onsubmit = async (e) => {
             e.preventDefault();
-            
             const nome = document.getElementById('cad-nome').value;
             const email = document.getElementById('cad-email').value;
             const zap = document.getElementById('cad-zap').value;
@@ -524,62 +504,28 @@
             const senha = document.getElementById('cad-pass').value;
 
             try {
-                // Ao criar conta, também força persistência de sessão
                 await setPersistence(auth, browserSessionPersistence);
                 const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-                
-                await setDoc(doc(db, "usuarios", userCredential.user.uid), { 
-                    nome: nome, 
-                    email: email, 
-                    zap: zap, 
-                    curso: curso, 
-                    bio: "" 
-                });
-
-                // --- CONFIGURAÇÃO DA MENSAGEM DO GURU ---
-                const msg = `Olá Guru! Acabei de criar minha conta na plataforma.\nNome: ${nome}\nCurso: ${curso}`;
-                const linkZap = `https://wa.me/${GURU_ZAP}?text=${encodeURIComponent(msg)}`;
-                
-                // Abre o WhatsApp e avisa o aluno
-                window.open(linkZap, '_blank');
-                alert("Conta criada com sucesso! Confirme seu cadastro no WhatsApp que abriu.");
-                
+                await setDoc(doc(db, "usuarios", userCredential.user.uid), { nome, email, zap, curso, bio: "" });
+                const msg = `Olá Guru! Criei minha conta.\nNome: ${nome}\nCurso: ${curso}`;
+                window.open(`https://wa.me/${GURU_ZAP}?text=${encodeURIComponent(msg)}`, '_blank');
+                alert("Conta criada! Confirme no WhatsApp.");
                 e.target.reset();
-                // A autenticação já vai disparar o onAuthStateChanged e logar
-            } catch (error) {
-                if(error.code === 'auth/email-already-in-use') {
-                    alert("Este e-mail já está cadastrado.");
-                } else if(error.code === 'auth/weak-password') {
-                    alert("A senha deve ter pelo menos 6 caracteres.");
-                } else {
-                    alert("Erro ao criar conta: " + error.message);
-                }
-            }
+            } catch (error) { alert("Erro ao criar conta: " + error.message); }
         };
 
         document.getElementById('formLogin').onsubmit = async (e) => {
             e.preventDefault();
             try {
-                // SEGURANÇA: Isso força o logout ao fechar o navegador
                 await setPersistence(auth, browserSessionPersistence);
                 await signInWithEmailAndPassword(auth, document.getElementById('login-user').value.trim(), document.getElementById('login-pass').value.trim());
-            } catch (error) {
-                alert("E-mail ou senha inválidos.");
-            }
+            } catch (error) { alert("E-mail ou senha inválidos."); }
         };
 
         document.getElementById('link-esqueci').onclick = () => document.getElementById('modal-reset-senha').classList.remove('oculto');
         document.getElementById('btn-enviar-reset').onclick = async () => {
-            try { 
-                await sendPasswordResetEmail(auth, document.getElementById('reset-email').value); 
-                alert("E-mail de recuperação enviado!\n\nVerifique sua caixa de entrada e também a pasta de SPAM/Lixo Eletrônico."); 
-                document.getElementById('modal-reset-senha').classList.add('oculto'); 
-            } 
-            catch (error) { 
-                if(error.code === 'auth/user-not-found') alert("E-mail não cadastrado no sistema.");
-                else if(error.code === 'auth/invalid-email') alert("E-mail inválido.");
-                else alert("Erro: " + error.message); 
-            }
+            try { await sendPasswordResetEmail(auth, document.getElementById('reset-email').value); alert("E-mail enviado!"); document.getElementById('modal-reset-senha').classList.add('oculto'); } 
+            catch (error) { alert("Erro: " + error.message); }
         };
 
         document.getElementById('btn-sair').onclick = async () => { await signOut(auth); location.reload(); };
@@ -600,29 +546,19 @@
                 document.getElementById('nav-config-guru').classList.add('oculto');
                 document.getElementById('nav-reclamacoes').classList.add('oculto');
             }
-
             lerPedidosDoFirebase();
             carregarPerfilPublicoGuru(); 
         }
 
-        const views = { 
-            pedidos: document.getElementById('view-pedidos'), 
-            perfilAluno: document.getElementById('view-perfil-aluno'), 
-            perfilGuruEdit: document.getElementById('view-perfil-guru-edit'), // Nova tela
-            configGuru: document.getElementById('view-config-guru'), 
-            reclamacoes: document.getElementById('view-reclamacoes') 
-        };
+        const views = { pedidos: document.getElementById('view-pedidos'), perfilAluno: document.getElementById('view-perfil-aluno'), perfilGuruEdit: document.getElementById('view-perfil-guru-edit'), configGuru: document.getElementById('view-config-guru'), reclamacoes: document.getElementById('view-reclamacoes') };
         function switchView(name) { Object.values(views).forEach(v => v.classList.add('oculto')); views[name].classList.remove('oculto'); }
 
         document.getElementById('nav-pedidos').onclick = () => switchView('pedidos');
         document.getElementById('nav-perfil').onclick = () => {
-            if(usuarioAtual.role === 'guru') switchView('perfilGuruEdit'); // Se for Guru, abre a edição completa
+            if(usuarioAtual.role === 'guru') switchView('perfilGuruEdit'); 
             else { switchView('perfilAluno'); document.getElementById('perf-nome').value=usuarioAtual.nome; document.getElementById('perf-zap').value=usuarioAtual.zap; document.getElementById('perf-curso').value=usuarioAtual.curso||""; document.getElementById('perf-bio').value=usuarioAtual.bio||""; }
         };
-        document.getElementById('nav-config-guru').onclick = () => {
-            switchView('configGuru'); // Só abre Pix e Senha
-            document.getElementById('conf-pix').value = GLOBAL_CHAVE_PIX; 
-        };
+        document.getElementById('nav-config-guru').onclick = () => { switchView('configGuru'); document.getElementById('conf-pix').value = GLOBAL_CHAVE_PIX; };
         document.getElementById('nav-reclamacoes').onclick = () => { switchView('reclamacoes'); lerReclamacoes(); };
         document.getElementById('nav-fazer-reclamacao').onclick = () => document.getElementById('modal-reclamacao').classList.remove('oculto');
         document.getElementById('nav-ajuda').onclick = () => document.getElementById('modal-ajuda').classList.remove('oculto');
@@ -659,9 +595,15 @@
                     if(p.status.includes('Verificando')) stColor = 'var(--status-verif)';
                     if(p.status.includes('Recusado')) stColor = 'var(--danger)';
                     if(p.status === 'Pago') stColor = 'var(--status-pago)';
-                    if(p.status === 'Finalizado' || p.status === 'Avaliado') stColor = 'var(--status-final)';
+                    if(p.status === 'Finalizado') stColor = 'var(--status-final)';
 
-                    let anexoHTML = p.arquivo ? `<a href="${p.arquivo}" download="${p.nomeArquivo}" style="color:var(--primary); font-size:12px; text-decoration:none;">📎 Anexo</a>` : '';
+                    // Lógica de Exibição do Arquivo
+                    let anexoHTML = '';
+                    if(p.arquivo && p.arquivo.startsWith('data:')) {
+                        anexoHTML = `<a href="${p.arquivo}" download="${p.nomeArquivo}" style="color:var(--primary); font-size:12px; text-decoration:none;">📎 Baixar Anexo</a>`;
+                    } else if (p.arquivo === "Enviado via WhatsApp") {
+                        anexoHTML = `<span style="color:var(--status-pago); font-size:12px;">📲 Arquivo enviado via WhatsApp</span>`;
+                    }
 
                     let html = `${btnDelete}
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
@@ -675,7 +617,6 @@
 
                     if(p.proposta) {
                         html += `<div style="font-weight:bold; color:var(--status-pago); margin-bottom:5px;">R$ ${p.proposta.valor}</div><div style="font-size:12px; color:#888; font-style:italic; margin-bottom:10px;">"${p.proposta.msg}"</div>`;
-                        
                         if(usuarioAtual.role === 'student') {
                             if(p.status === 'Proposta Recebida' || p.status === 'Pagamento Recusado') {
                                 if(p.status === 'Pagamento Recusado') html += `<div style="color:var(--danger); font-size:11px; margin-bottom:5px;">Pagamento não identificado. Tente novamente.</div>`;
@@ -685,8 +626,11 @@
                             if(p.status === 'Contraproposta') {
                                 html += `<div style="background:#2a1a2a; padding:10px; border-radius:6px; margin-top:5px;"><div style="font-size:12px; color:var(--status-contra);">Oferta Aluno: <b>R$ ${p.contraproposta.valor}</b></div><div style="display:flex; gap:5px; margin-top:5px;"><button onclick="aceitarContraproposta('${pid}', '${p.contraproposta.valor}')" class="btn-primary" style="flex:1; font-size:11px;">Aceitar</button><button onclick="abrirModalProposta('${pid}', {zapAluno:'${p.zapAluno}', titulo:'${p.titulo}'})" class="btn-secondary" style="flex:1; font-size:11px;">Mudar Valor</button></div></div>`;
                             } else if (p.status === 'Verificando Pagamento') {
-                                let ext = (p.comprovante && p.comprovante.startsWith('data:application/pdf')) ? 'pdf' : 'png';
-                                html += `<a href="${p.comprovante}" download="Comprovante_${p.aluno}.${ext}" class="btn-secondary" style="display:block; text-align:center; font-size:12px; margin-bottom:5px; text-decoration:none;">📄 Ver Comprovante</a><div style="display:flex; gap:5px;"><button onclick="aprovarPagamento('${pid}')" class="btn-primary" style="flex:1; background:var(--status-pago); font-size:11px;">Aprovar</button><button onclick="recusarPagamento('${pid}')" class="btn-primary" style="flex:1; background:var(--danger); font-size:11px;">Recusar</button></div>`;
+                                let compHTML = "";
+                                if(p.comprovante && p.comprovante.startsWith('data:')) compHTML = `<a href="${p.comprovante}" download="Comprovante" class="btn-secondary" style="display:block; text-align:center; font-size:12px; margin-bottom:5px; text-decoration:none;">📄 Ver Comprovante</a>`;
+                                else compHTML = `<span style="display:block; font-size:12px; color:var(--status-pago); text-align:center; margin-bottom:5px;">Comprovante no WhatsApp</span>`;
+                                
+                                html += `${compHTML}<div style="display:flex; gap:5px;"><button onclick="aprovarPagamento('${pid}')" class="btn-primary" style="flex:1; background:var(--status-pago); font-size:11px;">Aprovar</button><button onclick="recusarPagamento('${pid}')" class="btn-primary" style="flex:1; background:var(--danger); font-size:11px;">Recusar</button></div>`;
                             }
                         }
 
@@ -695,8 +639,10 @@
                             else html += `<small style="color:var(--status-pago);">Pagamento ok! Guru trabalhando...</small>`;
                         } else if(p.status === 'Finalizado' || p.status === 'Avaliado') {
                             if(p.arquivoResolucao) {
-                                let extRes = p.arquivoResolucao.startsWith('data:application/pdf') ? 'pdf' : (p.arquivoResolucao.startsWith('data:application/zip') ? 'zip' : 'png');
-                                html += `<a href="${p.arquivoResolucao}" download="Resolucao.${extRes}" class="btn-primary" style="display:block; text-align:center; text-decoration:none; margin-bottom:5px;">📥 Baixar Resolução</a>`;
+                                let resHTML = "";
+                                if(p.arquivoResolucao.startsWith('data:')) resHTML = `<a href="${p.arquivoResolucao}" download="Resolucao" class="btn-primary" style="display:block; text-align:center; text-decoration:none; margin-bottom:5px;">📥 Baixar Resolução</a>`;
+                                else resHTML = `<a href="https://wa.me/${GURU_ZAP}" target="_blank" class="btn-primary" style="display:block; text-align:center; text-decoration:none; margin-bottom:5px;">📥 Resolução no WhatsApp</a>`;
+                                html += resHTML;
                             }
                             if(usuarioAtual.role === 'student' && p.status !== 'Avaliado') {
                                 html += `<button onclick="window.avaliarGuru('${pid}')" class="btn-secondary" style="width:100%;">Avaliar</button>`;
@@ -705,17 +651,7 @@
                                 const nota = p.avaliacao?.nota || 0;
                                 const msg = p.avaliacao?.msg || "Sem comentário.";
                                 const stars = "★".repeat(nota) + "☆".repeat(5 - nota);
-                                // AQUI ESTÁ O DESTAQUE AMARELO DA AVALIAÇÃO
-                                html += `
-                                    <div style="background: rgba(255, 235, 59, 0.1); border: 1px solid #ffeb3b; padding: 10px; border-radius: 8px; margin-top: 10px;">
-                                        <div style="color: #ffeb3b; font-size: 14px; font-weight: bold; margin-bottom: 5px;">
-                                            Avaliação: ${stars} <span style="color:#aaa; font-size:11px;">(${nota}/5)</span>
-                                        </div>
-                                        <p style="color: #e0e0e0; font-size: 13px; font-style: italic;">
-                                            "${msg}"
-                                        </p>
-                                    </div>
-                                `;
+                                html += `<div style="background: rgba(255, 235, 59, 0.1); border: 1px solid #ffeb3b; padding: 10px; border-radius: 8px; margin-top: 10px;"><div style="color: #ffeb3b; font-size: 14px; font-weight: bold; margin-bottom: 5px;">Avaliação: ${stars} <span style="color:#aaa; font-size:11px;">(${nota}/5)</span></div><p style="color: #e0e0e0; font-size: 13px; font-style: italic;">"${msg}"</p></div>`;
                             }
                         }
                     } else if(usuarioAtual.role === 'guru') {
@@ -723,12 +659,11 @@
                     } else {
                         html += `<small style="color:#666;">Aguardando Guru...</small>`;
                     }
-
                     html += `</div>`;
                     div.innerHTML = html;
                     lista.appendChild(div);
                 });
-
+                
                 document.getElementById('stat-total').innerText = countTotal;
                 document.getElementById('stat-aberto').innerText = countAberto;
                 document.getElementById('stat-concluido').innerText = countConcluido;
@@ -736,27 +671,79 @@
             });
         }
 
-        const handleUpload = (idInput, idHidden, idDisplay, btnId) => {
-            document.getElementById(idInput).addEventListener('change', function(e) {
-                const f = e.target.files[0];
-                if(f) {
-                    if(f.size > 2097152) { alert("Arquivo muito grande (Max 2MB)"); return; }
-                    document.getElementById(idDisplay).innerText = f.name;
-                    const r = new FileReader();
-                    r.onload = (ev) => { document.getElementById(idHidden).value = ev.target.result; if(btnId) document.getElementById(btnId).disabled = false; };
-                    r.readAsDataURL(f);
+        // INPUTS E WARNING DE TAMANHO
+        const setupFileInput = (inputId, displayId, warningId, btnId) => {
+            document.getElementById(inputId).addEventListener('change', function(e) {
+                if(this.files && this.files[0]) {
+                    const f = this.files[0];
+                    document.getElementById(displayId).innerText = f.name;
+                    // Mostra aviso visual antes de enviar
+                    if(warningId) {
+                        const warn = document.getElementById(warningId);
+                        if(f.size > LIMITE_BYTES) warn.style.display = 'block';
+                        else warn.style.display = 'none';
+                    }
+                    if(btnId) document.getElementById(btnId).disabled = false;
                 }
             });
         };
-        handleUpload('ped-file', 'ped-file-base64', 'file-name-display');
-        handleUpload('pay-file', 'pay-file-base64', 'pay-file-display', 'btn-confirmar-pag');
-        handleUpload('entrega-file', 'entrega-file-base64', 'entrega-file-display', 'btn-confirmar-entrega');
-        handleUpload('upload-foto', 'conf-img-base64', 'preview-avatar');
-        handleUpload('upload-pdf-curriculo', 'conf-pdf-base64', 'display-pdf-name');
+        setupFileInput('ped-file', 'file-name-display', 'file-warning-display', null);
+        setupFileInput('pay-file', 'pay-file-display', 'pay-warning-display', 'btn-confirmar-pag');
+        setupFileInput('entrega-file', 'entrega-file-display', 'entrega-warning-display', 'btn-confirmar-entrega');
+        setupFileInput('upload-foto', 'preview-avatar', null, null);
+        setupFileInput('upload-pdf-curriculo', 'display-pdf-name', null, null);
 
+        // --- NOVO PEDIDO ---
         document.getElementById('btn-novo-pedido').onclick = () => document.getElementById('modal-pedido').classList.remove('oculto');
-        document.getElementById('formPedido').onsubmit = async (e) => { e.preventDefault(); try { await addDoc(collection(db, "pedidos"), { aluno: usuarioAtual.nome, emailAluno: usuarioAtual.email, zapAluno: usuarioAtual.zap, materia: document.getElementById('ped-materia').value, titulo: document.getElementById('ped-titulo').value, desc: document.getElementById('ped-desc').value, arquivo: document.getElementById('ped-file-base64').value || null, nomeArquivo: document.getElementById('file-name-display').innerText !== "Nenhum arquivo" ? document.getElementById('file-name-display').innerText : null, data: Date.now(), status: 'Em Análise', proposta: null }); alert("Enviado!"); document.querySelector('#modal-pedido .btn-close-modal').click(); e.target.reset(); } catch(err){ alert("Erro"); } };
+        document.getElementById('formPedido').onsubmit = async (e) => { 
+            e.preventDefault(); 
+            const titulo = document.getElementById('ped-titulo').value;
+            const materia = document.getElementById('ped-materia').value;
 
+            try {
+                // LÓGICA HÍBRIDA
+                const fileInput = document.getElementById('ped-file').files[0];
+                const fileData = await lerArquivo(fileInput); // Retorna {tipo: 'ZAP' ou 'BASE64', dados:...}
+
+                let arquivoSalvo = null;
+                let nomeArquivoSalvo = null;
+                if(fileData) {
+                    nomeArquivoSalvo = fileData.nome;
+                    if(fileData.tipo === 'BASE64') arquivoSalvo = fileData.dados;
+                    else arquivoSalvo = "Enviado via WhatsApp"; 
+                }
+
+                await addDoc(collection(db, "pedidos"), { 
+                    aluno: usuarioAtual.nome, 
+                    emailAluno: usuarioAtual.email, 
+                    zapAluno: usuarioAtual.zap, 
+                    materia: materia, titulo: titulo, desc: document.getElementById('ped-desc').value, 
+                    arquivo: arquivoSalvo, 
+                    nomeArquivo: nomeArquivoSalvo, 
+                    data: Date.now(), 
+                    status: 'Em Análise', proposta: null 
+                }); 
+
+                document.querySelector('#modal-pedido .btn-close-modal').click(); 
+                e.target.reset(); 
+                document.getElementById('file-name-display').innerText = "Nenhum arquivo";
+                document.getElementById('file-warning-display').style.display = 'none';
+
+                // SE FOR ARQUIVO GRANDE, ABRE WHATSAPP E MOSTRA ALERTA
+                if(fileData && fileData.tipo === 'ZAP') {
+                    const msg = `Olá Guru! Abri o pedido "${titulo}" (${materia}) na plataforma, mas o arquivo é grande.\nEstou enviando ele por aqui agora.`;
+                    window.open(`https://wa.me/${GURU_ZAP}?text=${encodeURIComponent(msg)}`, '_blank');
+                    
+                    // AQUI ESTÁ A MENSAGEM QUE VOCÊ PEDIU
+                    alert("Arquivo muito grande. Você será redirecionado para o WhatsApp para envio dos arquivos.");
+                } else {
+                    alert("Pedido enviado com sucesso!");
+                }
+
+            } catch(err){ alert("Erro: " + err.message); }
+        };
+
+        // --- PROPOSTAS ---
         let pedidoEmEdicao = null; let idPedidoEmEdicao = null;
         window.abrirModalProposta = (id, dados) => { idPedidoEmEdicao = id; pedidoEmEdicao = dados; document.getElementById('modal-proposta').classList.remove('oculto'); };
         document.getElementById('formProposta').onsubmit = async (e) => { e.preventDefault(); const v = document.getElementById('prop-valor').value; const m = document.getElementById('prop-msg').value; await updateDoc(doc(db, "pedidos", idPedidoEmEdicao), { status: "Proposta Recebida", proposta: { valor: v, msg: m } }); const zl = pedidoEmEdicao.zapAluno ? pedidoEmEdicao.zapAluno.replace(/\D/g,"") : ""; const txt = `Olá! Sou o Guru.\nAnalisei: ${pedidoEmEdicao.titulo}\nProposta: R$ ${v}\nDetalhes: ${m}`; if(zl)window.open(`https://wa.me/55${zl}?text=${encodeURIComponent(txt)}`,'_blank'); document.getElementById('modal-proposta').classList.add('oculto'); };
@@ -766,17 +753,77 @@
         document.getElementById('formContra').onsubmit = async (e) => { e.preventDefault(); await updateDoc(doc(db, "pedidos", idPedidoContra), { status: "Contraproposta", contraproposta: { valor: document.getElementById('contra-valor').value, msg: document.getElementById('contra-msg').value } }); alert("Enviado!"); document.getElementById('modal-contraproposta').classList.add('oculto'); };
         window.aceitarContraproposta = async (id, nv) => { if(confirm(`Aceitar oferta de R$ ${nv}?`)) { await updateDoc(doc(db, "pedidos", id), { status: "Proposta Recebida", "proposta.valor": nv, "proposta.msg": "Oferta aceita pelo Guru!" }); } };
 
+        // --- PAGAMENTO ---
         let idPedidoPagamento = null;
         window.abrirModalPagamento = (id, v) => { idPedidoPagamento = id; document.getElementById('modal-pagamento').classList.remove('oculto'); document.getElementById('display-valor-pix').innerText = `R$ ${v}`; document.getElementById('display-chave-pix').innerText = GLOBAL_CHAVE_PIX; };
         document.getElementById('btn-copiar').onclick = () => navigator.clipboard.writeText(GLOBAL_CHAVE_PIX).then(()=>alert("Copiado!"));
-        document.getElementById('btn-confirmar-pag').onclick = async () => { if(!idPedidoPagamento) return; const comp = document.getElementById('pay-file-base64').value; await updateDoc(doc(db, "pedidos", idPedidoPagamento), { status: "Verificando Pagamento", comprovante: comp }); alert("Enviado para análise!"); document.getElementById('modal-pagamento').classList.add('oculto'); };
+        
+        document.getElementById('btn-confirmar-pag').onclick = async () => { 
+            if(!idPedidoPagamento) return; 
+            const btn = document.getElementById('btn-confirmar-pag'); btn.disabled = true;
+            try {
+                const fileInput = document.getElementById('pay-file').files[0];
+                const fileData = await lerArquivo(fileInput);
+
+                let compSalvo = null;
+                if(fileData) {
+                    if(fileData.tipo === 'BASE64') compSalvo = fileData.dados;
+                    else compSalvo = "Enviado via WhatsApp";
+                }
+
+                await updateDoc(doc(db, "pedidos", idPedidoPagamento), { status: "Verificando Pagamento", comprovante: compSalvo }); 
+                
+                document.getElementById('modal-pagamento').classList.add('oculto');
+                document.getElementById('pay-file').value = "";
+                document.getElementById('pay-warning-display').style.display = 'none';
+
+                if(fileData && fileData.tipo === 'ZAP') {
+                    const msg = `Olá Guru! Fiz o pagamento do pedido (ID: ...${idPedidoPagamento.slice(-4)}).\nEstou enviando o comprovante por aqui.`;
+                    window.open(`https://wa.me/${GURU_ZAP}?text=${encodeURIComponent(msg)}`, '_blank');
+                    
+                    // AQUI ESTÁ A MENSAGEM QUE VOCÊ PEDIU
+                    alert("Arquivo muito grande. Você será redirecionado para o WhatsApp para envio dos arquivos.");
+                } else {
+                    alert("Enviado para análise!"); 
+                }
+            } catch(e) { alert("Erro: "+e.message); } 
+            finally { btn.disabled = false; }
+        };
         window.aprovarPagamento = async (id) => { if(confirm("Dinheiro na conta?")) await updateDoc(doc(db, "pedidos", id), { status: "Pago" }); };
         window.recusarPagamento = async (id) => { if(confirm("Marcar Inválido?")) await updateDoc(doc(db, "pedidos", id), { status: "Pagamento Recusado" }); };
 
+        // --- ENTREGA ---
         let idPedidoEntrega = null;
         window.abrirModalEntrega = (id) => { idPedidoEntrega = id; document.getElementById('modal-entrega').classList.remove('oculto'); };
-        document.getElementById('btn-confirmar-entrega').onclick = async () => { const arq = document.getElementById('entrega-file-base64').value; await updateDoc(doc(db, "pedidos", idPedidoEntrega), { status: "Finalizado", arquivoResolucao: arq }); alert("Entregue!"); document.getElementById('modal-entrega').classList.add('oculto'); };
+        document.getElementById('btn-confirmar-entrega').onclick = async () => { 
+            const btn = document.getElementById('btn-confirmar-entrega'); btn.disabled = true;
+            try {
+                const fileInput = document.getElementById('entrega-file').files[0];
+                const fileData = await lerArquivo(fileInput);
 
+                let arqSalvo = null;
+                if(fileData) {
+                    if(fileData.tipo === 'BASE64') arqSalvo = fileData.dados;
+                    else arqSalvo = "Enviado via WhatsApp";
+                }
+                
+                await updateDoc(doc(db, "pedidos", idPedidoEntrega), { status: "Finalizado", arquivoResolucao: arqSalvo }); 
+                
+                document.getElementById('modal-entrega').classList.add('oculto');
+                document.getElementById('entrega-file').value = "";
+                document.getElementById('entrega-warning-display').style.display = 'none';
+
+                if(fileData && fileData.tipo === 'ZAP') {
+                    // AQUI ESTÁ A MENSAGEM QUE VOCÊ PEDIU (CASO VOCÊ TAMBÉM ENVIE ARQUIVO GRANDE PRO ALUNO)
+                    alert("Arquivo muito grande. Você será redirecionado para o WhatsApp para envio dos arquivos.");
+                } else {
+                    alert("Entregue!"); 
+                }
+            } catch(e) { alert("Erro: "+e.message); }
+            finally { btn.disabled = false; }
+        };
+
+        // --- AVALIAÇÃO ---
         let idAvaliacao = null; let notaAvaliacao = 5;
         window.avaliarGuru = (id) => { idAvaliacao = id; document.getElementById('modal-avaliacao').classList.remove('oculto'); };
         document.querySelectorAll('.star').forEach(s => { s.onclick = function() { notaAvaliacao = this.getAttribute('data-val'); document.querySelectorAll('.star').forEach(st => st.classList.toggle('selected', st.getAttribute('data-val') <= notaAvaliacao)); } });
@@ -802,47 +849,54 @@
             alert("Salvo!"); document.getElementById('nav-pedidos').click(); 
         };
 
-        // SALVA APENAS OS DADOS DO PERFIL PÚBLICO
+        // --- PERFIL GURU (MANTÉM LIMITE 750KB POIS SÃO FOTOS/PDF PEQUENOS) ---
         document.getElementById('formPerfilGuruEdit').onsubmit = async (e) => { 
             e.preventDefault(); 
-            await setDoc(doc(db, "config_site", "perfil_guru"), { 
-                titulo: document.getElementById('conf-titulo').value, 
-                sub: document.getElementById('conf-sub').value, 
-                bio: document.getElementById('conf-bio').value, 
-                imgBase64: document.getElementById('conf-img-base64').value,
-                pdfBase64: document.getElementById('conf-pdf-base64').value,
-                lattes: document.getElementById('conf-lattes').value,
-                // O PIX NÃO É SALVO AQUI PARA NÃO APAGAR O VALOR EXISTENTE
-            }, { merge: true }); // Merge garante que não apague o pix se ele já existir
-            alert("Perfil Atualizado!"); 
-            carregarPerfilPublicoGuru(); 
-            document.getElementById('nav-pedidos').click(); 
+            const btn = document.getElementById('btn-save-perf-guru'); btn.disabled = true;
+            try {
+                const fileFoto = document.getElementById('upload-foto').files[0];
+                const filePdf = document.getElementById('upload-pdf-curriculo').files[0];
+                
+                let b64Foto = document.getElementById('conf-img-base64').value;
+                let b64Pdf = document.getElementById('conf-pdf-base64').value;
+
+                if(fileFoto) {
+                    if(fileFoto.size > 750000) throw new Error("Foto muito grande (Max 750KB).");
+                    const res = await lerArquivo(fileFoto);
+                    b64Foto = res.dados;
+                }
+                if(filePdf) {
+                    if(filePdf.size > 750000) throw new Error("PDF Currículo muito grande (Max 750KB).");
+                    const res = await lerArquivo(filePdf);
+                    b64Pdf = res.dados;
+                }
+
+                await setDoc(doc(db, "config_site", "perfil_guru"), { 
+                    titulo: document.getElementById('conf-titulo').value, 
+                    sub: document.getElementById('conf-sub').value, 
+                    bio: document.getElementById('conf-bio').value, 
+                    imgBase64: b64Foto,
+                    pdfBase64: b64Pdf,
+                    lattes: document.getElementById('conf-lattes').value,
+                }, { merge: true }); 
+                alert("Perfil Atualizado!"); 
+                carregarPerfilPublicoGuru(); 
+                document.getElementById('nav-pedidos').click(); 
+            } catch(e) { alert("Erro: "+e.message); }
+            finally { btn.disabled = false; }
         };
 
-        // SALVA APENAS PIX E SENHA
         document.getElementById('formConfigGuru').onsubmit = async (e) => { 
             e.preventDefault(); 
             const novoPix = document.getElementById('conf-pix').value;
             const novaSenha = document.getElementById('conf-nova-senha').value;
-
-            if(novoPix) {
-                await setDoc(doc(db, "config_site", "perfil_guru"), { pix: novoPix }, { merge: true });
-            }
-
+            if(novoPix) await setDoc(doc(db, "config_site", "perfil_guru"), { pix: novoPix }, { merge: true });
             if(novaSenha) {
                 if(novaSenha.length < 6) { alert("Senha deve ter no mínimo 6 caracteres."); return; }
-                try {
-                    await updatePassword(auth.currentUser, novaSenha);
-                    alert("Senha alterada com sucesso!");
-                } catch(err) {
-                    alert("Erro ao alterar senha: " + err.message);
-                    return;
-                }
+                try { await updatePassword(auth.currentUser, novaSenha); alert("Senha alterada!"); } 
+                catch(err) { alert("Erro ao alterar senha: " + err.message); return; }
             }
-            
-            alert("Configurações Salvas!"); 
-            carregarPerfilPublicoGuru(); 
-            document.getElementById('nav-pedidos').click(); 
+            alert("Configurações Salvas!"); carregarPerfilPublicoGuru(); document.getElementById('nav-pedidos').click(); 
         };
 
         async function carregarPerfilPublicoGuru() { 
@@ -851,12 +905,10 @@
                 const dd = d.data(); 
                 if(dd.pix) GLOBAL_CHAVE_PIX = dd.pix;
                 const im = dd.imgBase64 || "https://cdn-icons-png.flaticon.com/512/609/609032.png"; 
-                
                 if(document.getElementById('guru-avatar-img')) document.getElementById('guru-avatar-img').style.backgroundImage = `url('${im}')`; 
                 if(document.getElementById('header-guru-img')) document.getElementById('header-guru-img').style.backgroundImage = `url('${im}')`; 
                 if(document.getElementById('guru-title')) document.getElementById('guru-title').innerText = dd.titulo; 
                 if(document.getElementById('guru-subtitle')) document.getElementById('guru-subtitle').innerText = dd.sub; 
-                
                 if(usuarioAtual && usuarioAtual.role==='guru') { 
                     document.getElementById('preview-avatar').style.backgroundImage = `url('${im}')`; 
                     document.getElementById('conf-img-base64').value = im; 
@@ -865,19 +917,16 @@
                     document.getElementById('conf-titulo').value = dd.titulo; 
                     document.getElementById('conf-sub').value = dd.sub; 
                     document.getElementById('conf-lattes').value = dd.lattes || "";
-                    document.getElementById('conf-pix').value = dd.pix || ""; // Carrega o Pix na tela de config também
+                    document.getElementById('conf-pix').value = dd.pix || ""; 
                 } 
-                
                 document.getElementById('btn-ver-quali-header').onclick = document.getElementById('btn-ver-quali').onclick = async () => { 
                     document.getElementById('qualificacoes-texto').innerText = dd.bio || "Sem info.";
                     const btnLattes = document.getElementById('btn-link-lattes');
                     if(dd.lattes) { btnLattes.href = dd.lattes; btnLattes.style.display = 'block'; } else { btnLattes.style.display = 'none'; }
                     const btnPdf = document.getElementById('btn-link-pdf');
                     if(dd.pdfBase64) { btnPdf.href = dd.pdfBase64; btnPdf.style.display = 'block'; } else { btnPdf.style.display = 'none'; }
-                    
                     const listaAval = document.getElementById('lista-avaliacoes-publicas');
                     listaAval.innerHTML = '<div style="color:#666; text-align:center;">Carregando...</div>';
-                    
                     const q = query(collection(db, "pedidos"), where("status", "==", "Avaliado"));
                     onSnapshot(q, (snapshot) => {
                         listaAval.innerHTML = "";
@@ -895,7 +944,6 @@
 
         window.deletarPedido = async (id) => { if(confirm("Excluir?")) await deleteDoc(doc(db, "pedidos", id)); };
         document.querySelectorAll('.btn-close-modal').forEach(b => b.onclick = (e) => { e.preventDefault(); e.target.closest('.modal-overlay').classList.add('oculto'); });
-        
         const btnAdminRecl = document.getElementById('btn-admin-recl');
         if(btnAdminRecl) btnAdminRecl.onclick = () => { switchView('reclamacoes'); lerReclamacoes(); };
     </script>
