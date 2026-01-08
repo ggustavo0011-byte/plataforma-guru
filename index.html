@@ -132,12 +132,33 @@
         .review-header { display: flex; justify-content: space-between; font-size: 12px; color: #aaa; margin-bottom: 5px; }
         .review-stars { color: #ffeb3b; font-size: 14px; }
 
+        /* --- CORREÇÃO PARA CELULAR (LOGO E MENU) --- */
         @media (max-width: 900px) { 
             .left-side-showcase { display: none; } 
             .auth-container { border-left: none; }
             .app-layout { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; flex-direction: row; padding: 10px; overflow-x: auto; border-bottom: 1px solid var(--border); border-right: none; align-items: center; }
-            .sidebar-logo { margin-bottom: 0; margin-right: 20px; font-size: 20px; }
+            
+            /* Ajuste do cabeçalho móvel */
+            .sidebar { 
+                width: 100%; 
+                height: auto; 
+                flex-direction: row; 
+                padding: 10px; 
+                overflow-x: auto; 
+                border-bottom: 1px solid var(--border); 
+                border-right: none; 
+                align-items: center;
+                justify-content: space-between; /* Espalha itens */
+            }
+            
+            /* Ajuste para o nome não quebrar */
+            .sidebar-logo { 
+                margin-bottom: 0; 
+                margin-right: 15px; 
+                font-size: 18px; 
+                white-space: nowrap; /* Impede quebra de linha */
+            }
+            
             .nav-menu { flex-direction: row; }
             .nav-item { padding: 8px 12px; white-space: nowrap; }
             .requests-grid { grid-template-columns: 1fr; }
@@ -173,10 +194,10 @@
                     <h1 class="logo">Criar Conta</h1>
                     <form id="formCadastro">
                         <input type="text" id="cad-nome" placeholder="Nome completo" required>
-                        <div class="form-row" style="display:flex; gap:10px;">
-                            <input type="email" id="cad-email" placeholder="Email" style="flex:2" required>
-                            <input type="tel" id="cad-zap" placeholder="WhatsApp (DDD+Num)" style="flex:1" required>
-                        </div>
+                        
+                        <input type="email" id="cad-email" placeholder="Email" required>
+                        <input type="tel" id="cad-zap" placeholder="WhatsApp (DDD+Num)" required>
+                        
                         <input type="text" id="cad-curso" placeholder="Curso" required>
                         <input type="password" id="cad-pass" placeholder="Senha" required>
                         <button type="submit" class="btn-primary">Cadastrar</button>
@@ -496,8 +517,10 @@
         document.getElementById('link-cadastro').onclick = () => { document.getElementById('box-login').classList.add('oculto'); document.getElementById('box-cadastro').classList.remove('oculto'); };
         document.getElementById('link-login').onclick = () => { document.getElementById('box-cadastro').classList.add('oculto'); document.getElementById('box-login').classList.remove('oculto'); };
         
+        // --- ATUALIZAÇÃO: CADASTRO COM NOTIFICAÇÃO DE WHATSAPP ---
         document.getElementById('formCadastro').onsubmit = async (e) => {
             e.preventDefault();
+            
             const nome = document.getElementById('cad-nome').value;
             const email = document.getElementById('cad-email').value;
             const zap = document.getElementById('cad-zap').value;
@@ -505,13 +528,39 @@
             const senha = document.getElementById('cad-pass').value;
 
             try {
-                // Ao criar conta, também força persistência de sessão (fecha navegador = desloga)
+                // Ao criar conta, também força persistência de sessão
                 await setPersistence(auth, browserSessionPersistence);
                 const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-                await setDoc(doc(db, "usuarios", userCredential.user.uid), { nome: nome, email: email, zap: zap, curso: curso, bio: "" });
-                alert("Conta criada com sucesso!");
+                
+                await setDoc(doc(db, "usuarios", userCredential.user.uid), { 
+                    nome: nome, 
+                    email: email, 
+                    zap: zap, 
+                    curso: curso, 
+                    bio: "" 
+                });
+
+                // --- CONFIGURAÇÃO DA MENSAGEM DO GURU ---
+                // *** SEU NÚMERO JÁ CONFIGURADO ***
+                const GURU_ZAP = "5583981023942"; 
+                
+                const msg = `Olá Guru! Acabei de criar minha conta na plataforma.\nNome: ${nome}\nCurso: ${curso}`;
+                const linkZap = `https://wa.me/${GURU_ZAP}?text=${encodeURIComponent(msg)}`;
+                
+                // Abre o WhatsApp e avisa o aluno
+                window.open(linkZap, '_blank');
+                alert("Conta criada com sucesso! Confirme seu cadastro no WhatsApp que abriu.");
+                
+                e.target.reset();
+                // A autenticação já vai disparar o onAuthStateChanged e logar
             } catch (error) {
-                alert("Erro ao criar conta: " + error.message);
+                if(error.code === 'auth/email-already-in-use') {
+                    alert("Este e-mail já está cadastrado.");
+                } else if(error.code === 'auth/weak-password') {
+                    alert("A senha deve ter pelo menos 6 caracteres.");
+                } else {
+                    alert("Erro ao criar conta: " + error.message);
+                }
             }
         };
 
@@ -859,4 +908,3 @@
     </script>
 </body>
 </html>
-
