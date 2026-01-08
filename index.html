@@ -242,17 +242,20 @@
                 </form>
             </div>
 
-            <div id="view-config-guru" class="profile-section oculto">
+            <div id="view-perfil-guru-edit" class="profile-section oculto">
                 <div id="preview-avatar" class="profile-large-img"></div>
                 <div style="text-align:center; margin-bottom:20px;">
                     <label for="upload-foto" style="cursor:pointer; color:var(--primary);">Alterar Foto</label>
                     <input id="upload-foto" type="file" accept="image/*">
                 </div>
-                <form id="formConfigGuru">
+                <h2 style="text-align:center; margin-bottom:20px;">Editar Meu Perfil Público</h2>
+                <form id="formPerfilGuruEdit">
                     <input type="hidden" id="conf-img-base64">
-                    <input type="hidden" id="conf-pdf-base64"> <label>Título</label><input type="text" id="conf-titulo">
-                    <label>Subtítulo</label><input type="text" id="conf-sub">
-                    <label>Sobre Mim</label><textarea id="conf-bio"></textarea>
+                    <input type="hidden" id="conf-pdf-base64"> 
+                    
+                    <label>Título (Ex: Guru da Elétrica)</label><input type="text" id="conf-titulo">
+                    <label>Subtítulo (Ex: Especialista...)</label><input type="text" id="conf-sub">
+                    <label>Sobre Mim (Bio)</label><textarea id="conf-bio" style="height:120px;"></textarea>
                     
                     <label style="color:#2196f3;">Link Currículo Lattes</label>
                     <input type="url" id="conf-lattes" placeholder="http://lattes.cnpq.br/...">
@@ -262,11 +265,20 @@
                     <input type="file" id="upload-pdf-curriculo" accept=".pdf">
                     <div id="display-pdf-name" style="font-size:12px; color:#888; text-align:center; margin-bottom:15px;">Nenhum arquivo</div>
 
-                    <label style="color:var(--status-pago);">Chave PIX (Para Recebimento)</label>
-                    <input type="text" id="conf-pix" style="border-color:var(--status-pago);">
+                    <button type="submit" class="btn-primary">Salvar Perfil</button>
+                </form>
+            </div>
 
-                    <p style="font-size:12px; color:#aaa; text-align:center;">Para alterar sua senha, use a opção "Esqueci minha senha" na tela de login.</p>
-                    <button type="submit" class="btn-primary btn-admin">Salvar Configurações</button>
+            <div id="view-config-guru" class="profile-section oculto">
+                <h2 style="text-align:center; margin-bottom:30px;">Configurações & Pagamento</h2>
+                <form id="formConfigGuru">
+                    <label style="color:var(--status-pago);">Chave PIX (Para Recebimento)</label>
+                    <input type="text" id="conf-pix" style="border-color:var(--status-pago);" placeholder="Sua chave PIX">
+
+                    <label style="color:var(--status-verif); margin-top:20px;">Alterar Senha de Acesso</label>
+                    <input type="password" id="conf-nova-senha" placeholder="Nova senha (mínimo 6 dígitos)">
+                    
+                    <button type="submit" class="btn-primary btn-admin" style="margin-top:20px;">Salvar Configurações</button>
                 </form>
             </div>
 
@@ -426,15 +438,14 @@
     </div>
 
     <script type="module">
-        // Importamos a biblioteca de Autenticação do Firebase (Auth)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updatePassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc, setDoc, getDoc, deleteDoc, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDZHpdplfEEPJAN_tvte37k9sXALutykUs", authDomain: "gurueletrica-5f494.firebaseapp.com", projectId: "gurueletrica-5f494", storageBucket: "gurueletrica-5f494.firebasestorage.app", messagingSenderId: "561793673334", appId: "1:561793673334:web:a68a9a603ae08875c59757" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app); // Inicializamos o serviço de Auth
+        const auth = getAuth(app); 
         
         let GLOBAL_CHAVE_PIX = "ggustavo0011@gmail.com"; 
         const GURU_EMAIL = "ggustavo0011@gmail.com"; 
@@ -444,17 +455,11 @@
         
         const telas = { login: document.getElementById('tela-acesso'), dash: document.getElementById('tela-dashboard') };
         
-        // --- GERENCIAMENTO DE ESTADO (OBSERVADOR) ---
-        // Este comando roda sozinho sempre que a pagina abre ou o login muda
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Usuário está logado
                 let dadosUser = {};
-                // Tenta buscar os dados extras no Firestore
                 const docSnap = await getDoc(doc(db, "usuarios", user.uid));
-                if(docSnap.exists()){
-                    dadosUser = docSnap.data();
-                }
+                if(docSnap.exists()){ dadosUser = docSnap.data(); }
 
                 usuarioAtual = {
                     uid: user.uid,
@@ -463,19 +468,16 @@
                     zap: dadosUser.zap || "",
                     curso: dadosUser.curso || "",
                     bio: dadosUser.bio || "",
-                    // Se o email for o do Gustavo, ele vira 'guru', senão 'student'
                     role: (user.email === GURU_EMAIL) ? 'guru' : 'student'
                 };
                 iniciarSistema();
             } else {
-                // Ninguém logado
                 usuarioAtual = null;
                 telas.dash.classList.add('oculto');
                 telas.login.classList.remove('oculto');
             }
         });
 
-        // --- SISTEMA DE CADASTRO NOVO (FIREBASE AUTH) ---
         document.getElementById('link-cadastro').onclick = () => { document.getElementById('box-login').classList.add('oculto'); document.getElementById('box-cadastro').classList.remove('oculto'); };
         document.getElementById('link-login').onclick = () => { document.getElementById('box-cadastro').classList.add('oculto'); document.getElementById('box-login').classList.remove('oculto'); };
         
@@ -488,64 +490,30 @@
             const senha = document.getElementById('cad-pass').value;
 
             try {
-                // 1. Cria o login seguro no Firebase Auth
                 const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-                const user = userCredential.user;
-
-                // 2. Salva os dados complementares no Firestore (banco de dados)
-                await setDoc(doc(db, "usuarios", user.uid), {
-                    nome: nome,
-                    email: email,
-                    zap: zap,
-                    curso: curso,
-                    bio: ""
-                });
-
-                alert("Conta criada com sucesso! Você já está logado.");
-                // O onAuthStateChanged vai rodar automaticamente e entrar no sistema
+                await setDoc(doc(db, "usuarios", userCredential.user.uid), { nome: nome, email: email, zap: zap, curso: curso, bio: "" });
+                alert("Conta criada com sucesso!");
             } catch (error) {
-                let msg = error.message;
-                if(msg.includes("email-already-in-use")) msg = "E-mail já cadastrado.";
-                if(msg.includes("weak-password")) msg = "A senha deve ter pelo menos 6 caracteres.";
-                alert("Erro ao criar conta: " + msg);
+                alert("Erro ao criar conta: " + error.message);
             }
         };
 
-        // --- SISTEMA DE LOGIN NOVO (FIREBASE AUTH) ---
         document.getElementById('formLogin').onsubmit = async (e) => {
             e.preventDefault();
-            const email = document.getElementById('login-user').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-
             try {
-                await signInWithEmailAndPassword(auth, email, pass);
-                // Não precisa chamar iniciarSistema(), o onAuthStateChanged fará isso.
+                await signInWithEmailAndPassword(auth, document.getElementById('login-user').value.trim(), document.getElementById('login-pass').value.trim());
             } catch (error) {
-                alert("Erro ao entrar: E-mail ou senha inválidos.");
-                console.error(error);
+                alert("E-mail ou senha inválidos.");
             }
         };
 
-        // --- SISTEMA DE RESET DE SENHA (FIREBASE) ---
         document.getElementById('link-esqueci').onclick = () => document.getElementById('modal-reset-senha').classList.remove('oculto');
-        
         document.getElementById('btn-enviar-reset').onclick = async () => {
-            const email = document.getElementById('reset-email').value;
-            if(!email) { alert("Digite seu e-mail."); return; }
-            try {
-                await sendPasswordResetEmail(auth, email);
-                alert("E-mail enviado! Verifique sua caixa de entrada.");
-                document.getElementById('modal-reset-senha').classList.add('oculto');
-            } catch (error) {
-                alert("Erro: " + error.message);
-            }
+            try { await sendPasswordResetEmail(auth, document.getElementById('reset-email').value); alert("E-mail enviado!"); document.getElementById('modal-reset-senha').classList.add('oculto'); } 
+            catch (error) { alert("Erro: " + error.message); }
         };
 
-        // --- LOGOUT ---
-        document.getElementById('btn-sair').onclick = async () => {
-            await signOut(auth);
-            location.reload();
-        };
+        document.getElementById('btn-sair').onclick = async () => { await signOut(auth); location.reload(); };
 
         function iniciarSistema() {
             telas.login.classList.add('oculto');
@@ -568,15 +536,24 @@
             carregarPerfilPublicoGuru(); 
         }
 
-        const views = { pedidos: document.getElementById('view-pedidos'), perfilAluno: document.getElementById('view-perfil-aluno'), configGuru: document.getElementById('view-config-guru'), reclamacoes: document.getElementById('view-reclamacoes') };
+        const views = { 
+            pedidos: document.getElementById('view-pedidos'), 
+            perfilAluno: document.getElementById('view-perfil-aluno'), 
+            perfilGuruEdit: document.getElementById('view-perfil-guru-edit'), // Nova tela
+            configGuru: document.getElementById('view-config-guru'), 
+            reclamacoes: document.getElementById('view-reclamacoes') 
+        };
         function switchView(name) { Object.values(views).forEach(v => v.classList.add('oculto')); views[name].classList.remove('oculto'); }
 
         document.getElementById('nav-pedidos').onclick = () => switchView('pedidos');
         document.getElementById('nav-perfil').onclick = () => {
-            if(usuarioAtual.role === 'guru') switchView('configGuru');
+            if(usuarioAtual.role === 'guru') switchView('perfilGuruEdit'); // Se for Guru, abre a edição completa
             else { switchView('perfilAluno'); document.getElementById('perf-nome').value=usuarioAtual.nome; document.getElementById('perf-zap').value=usuarioAtual.zap; document.getElementById('perf-curso').value=usuarioAtual.curso||""; document.getElementById('perf-bio').value=usuarioAtual.bio||""; }
         };
-        document.getElementById('nav-config-guru').onclick = () => switchView('configGuru');
+        document.getElementById('nav-config-guru').onclick = () => {
+            switchView('configGuru'); // Só abre Pix e Senha
+            document.getElementById('conf-pix').value = GLOBAL_CHAVE_PIX; 
+        };
         document.getElementById('nav-reclamacoes').onclick = () => { switchView('reclamacoes'); lerReclamacoes(); };
         document.getElementById('nav-fazer-reclamacao').onclick = () => document.getElementById('modal-reclamacao').classList.remove('oculto');
         document.getElementById('nav-ajuda').onclick = () => document.getElementById('modal-ajuda').classList.remove('oculto');
@@ -656,8 +633,20 @@
                                 html += `<button onclick="window.avaliarGuru('${pid}')" class="btn-secondary" style="width:100%;">Avaliar</button>`;
                             }
                             if(p.status === 'Avaliado') {
-                                let st = "★".repeat(p.avaliacao.nota);
-                                html += `<div style="color:#ffeb3b; font-size:12px; margin-top:5px;">${st} "${p.avaliacao.msg}"</div>`;
+                                const nota = p.avaliacao?.nota || 0;
+                                const msg = p.avaliacao?.msg || "Sem comentário.";
+                                const stars = "★".repeat(nota) + "☆".repeat(5 - nota);
+                                // AQUI ESTÁ O DESTAQUE AMARELO DA AVALIAÇÃO
+                                html += `
+                                    <div style="background: rgba(255, 235, 59, 0.1); border: 1px solid #ffeb3b; padding: 10px; border-radius: 8px; margin-top: 10px;">
+                                        <div style="color: #ffeb3b; font-size: 14px; font-weight: bold; margin-bottom: 5px;">
+                                            Avaliação: ${stars} <span style="color:#aaa; font-size:11px;">(${nota}/5)</span>
+                                        </div>
+                                        <p style="color: #e0e0e0; font-size: 13px; font-style: italic;">
+                                            "${msg}"
+                                        </p>
+                                    </div>
+                                `;
                             }
                         }
                     } else if(usuarioAtual.role === 'guru') {
@@ -678,7 +667,6 @@
             });
         }
 
-        // --- UPLOADS ---
         const handleUpload = (idInput, idHidden, idDisplay, btnId) => {
             document.getElementById(idInput).addEventListener('change', function(e) {
                 const f = e.target.files[0];
@@ -697,7 +685,6 @@
         handleUpload('upload-foto', 'conf-img-base64', 'preview-avatar');
         handleUpload('upload-pdf-curriculo', 'conf-pdf-base64', 'display-pdf-name');
 
-        // --- ACTIONS ---
         document.getElementById('btn-novo-pedido').onclick = () => document.getElementById('modal-pedido').classList.remove('oculto');
         document.getElementById('formPedido').onsubmit = async (e) => { e.preventDefault(); try { await addDoc(collection(db, "pedidos"), { aluno: usuarioAtual.nome, emailAluno: usuarioAtual.email, zapAluno: usuarioAtual.zap, materia: document.getElementById('ped-materia').value, titulo: document.getElementById('ped-titulo').value, desc: document.getElementById('ped-desc').value, arquivo: document.getElementById('ped-file-base64').value || null, nomeArquivo: document.getElementById('file-name-display').innerText !== "Nenhum arquivo" ? document.getElementById('file-name-display').innerText : null, data: Date.now(), status: 'Em Análise', proposta: null }); alert("Enviado!"); document.querySelector('#modal-pedido .btn-close-modal').click(); e.target.reset(); } catch(err){ alert("Erro"); } };
 
@@ -742,17 +729,53 @@
         window.excluirReclamacao = async(id) => { if(confirm("Resolver?")) await deleteDoc(doc(db,"reclamacoes",id)); };
 
         document.getElementById('formPerfilAluno').onsubmit = async (e) => { e.preventDefault(); 
-            // Atualiza no Firestore
-            await updateDoc(doc(db, "usuarios", usuarioAtual.uid), {
-                nome: document.getElementById('perf-nome').value,
-                zap: document.getElementById('perf-zap').value,
-                curso: document.getElementById('perf-curso').value,
-                bio: document.getElementById('perf-bio').value
-            });
+            await updateDoc(doc(db, "usuarios", usuarioAtual.uid), { nome: document.getElementById('perf-nome').value, zap: document.getElementById('perf-zap').value, curso: document.getElementById('perf-curso').value, bio: document.getElementById('perf-bio').value });
             alert("Salvo!"); document.getElementById('nav-pedidos').click(); 
         };
 
-        // PERFIL GURU (LOAD + REVIEWS)
+        // SALVA APENAS OS DADOS DO PERFIL PÚBLICO
+        document.getElementById('formPerfilGuruEdit').onsubmit = async (e) => { 
+            e.preventDefault(); 
+            await setDoc(doc(db, "config_site", "perfil_guru"), { 
+                titulo: document.getElementById('conf-titulo').value, 
+                sub: document.getElementById('conf-sub').value, 
+                bio: document.getElementById('conf-bio').value, 
+                imgBase64: document.getElementById('conf-img-base64').value,
+                pdfBase64: document.getElementById('conf-pdf-base64').value,
+                lattes: document.getElementById('conf-lattes').value,
+                // O PIX NÃO É SALVO AQUI PARA NÃO APAGAR O VALOR EXISTENTE
+            }, { merge: true }); // Merge garante que não apague o pix se ele já existir
+            alert("Perfil Atualizado!"); 
+            carregarPerfilPublicoGuru(); 
+            document.getElementById('nav-pedidos').click(); 
+        };
+
+        // SALVA APENAS PIX E SENHA
+        document.getElementById('formConfigGuru').onsubmit = async (e) => { 
+            e.preventDefault(); 
+            const novoPix = document.getElementById('conf-pix').value;
+            const novaSenha = document.getElementById('conf-nova-senha').value;
+
+            if(novoPix) {
+                await setDoc(doc(db, "config_site", "perfil_guru"), { pix: novoPix }, { merge: true });
+            }
+
+            if(novaSenha) {
+                if(novaSenha.length < 6) { alert("Senha deve ter no mínimo 6 caracteres."); return; }
+                try {
+                    await updatePassword(auth.currentUser, novaSenha);
+                    alert("Senha alterada com sucesso!");
+                } catch(err) {
+                    alert("Erro ao alterar senha: " + err.message);
+                    return;
+                }
+            }
+            
+            alert("Configurações Salvas!"); 
+            carregarPerfilPublicoGuru(); 
+            document.getElementById('nav-pedidos').click(); 
+        };
+
         async function carregarPerfilPublicoGuru() { 
             const d = await getDoc(doc(db, "config_site", "perfil_guru")); 
             if(d.exists()){ 
@@ -773,18 +796,16 @@
                     document.getElementById('conf-titulo').value = dd.titulo; 
                     document.getElementById('conf-sub').value = dd.sub; 
                     document.getElementById('conf-lattes').value = dd.lattes || "";
-                    document.getElementById('conf-pix').value = dd.pix || "";
+                    document.getElementById('conf-pix').value = dd.pix || ""; // Carrega o Pix na tela de config também
                 } 
                 
                 document.getElementById('btn-ver-quali-header').onclick = document.getElementById('btn-ver-quali').onclick = async () => { 
                     document.getElementById('qualificacoes-texto').innerText = dd.bio || "Sem info.";
-                    
                     const btnLattes = document.getElementById('btn-link-lattes');
                     if(dd.lattes) { btnLattes.href = dd.lattes; btnLattes.style.display = 'block'; } else { btnLattes.style.display = 'none'; }
-
                     const btnPdf = document.getElementById('btn-link-pdf');
                     if(dd.pdfBase64) { btnPdf.href = dd.pdfBase64; btnPdf.style.display = 'block'; } else { btnPdf.style.display = 'none'; }
-
+                    
                     const listaAval = document.getElementById('lista-avaliacoes-publicas');
                     listaAval.innerHTML = '<div style="color:#666; text-align:center;">Carregando...</div>';
                     
@@ -802,23 +823,6 @@
                 }; 
             } 
         }
-
-        document.getElementById('formConfigGuru').onsubmit = async (e) => { 
-            e.preventDefault(); 
-            await setDoc(doc(db, "config_site", "perfil_guru"), { 
-                titulo: document.getElementById('conf-titulo').value, 
-                sub: document.getElementById('conf-sub').value, 
-                bio: document.getElementById('conf-bio').value, 
-                imgBase64: document.getElementById('conf-img-base64').value,
-                pdfBase64: document.getElementById('conf-pdf-base64').value,
-                lattes: document.getElementById('conf-lattes').value,
-                pix: document.getElementById('conf-pix').value
-            }); 
-            // Senha não é mais trocada aqui
-            alert("Salvo!"); 
-            carregarPerfilPublicoGuru(); 
-            document.getElementById('nav-pedidos').click(); 
-        };
 
         window.deletarPedido = async (id) => { if(confirm("Excluir?")) await deleteDoc(doc(db, "pedidos", id)); };
         document.querySelectorAll('.btn-close-modal').forEach(b => b.onclick = (e) => { e.preventDefault(); e.target.closest('.modal-overlay').classList.add('oculto'); });
