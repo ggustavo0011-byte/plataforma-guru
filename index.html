@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guru da Elétrica - Ajuda em Engenharia</title>
+    
+    <title>Guru da Elétrica - Consultoria e Projetos de Engenharia</title>
+    <meta name="description" content="Plataforma Guru da Elétrica: Suporte personalizado em engenharia elétrica, projetos NBR 5410 e consultoria técnica para estudantes e profissionais.">
+    <meta name="keywords" content="engenharia elétrica, nbr 5410, projetos elétricos, consultoria elétrica, guru da eletrica, dimensionamento elétrico">
+    <meta name="author" content="Gustavo">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:title" content="Guru da Elétrica - Seu suporte em Engenharia">
+    <meta property="og:description" content="Plataforma moderna para projetos elétricos e suporte técnico personalizado.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ggustavo0011-byte.github.io/plataforma-guru/">
     <style>
         /* --- ESTILOS GERAIS --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
@@ -40,7 +50,6 @@
         .nav-item.danger { color: var(--danger); margin-top: auto; }
         
         .main-content { flex: 1; padding: 30px; overflow-y: auto; }
-        /* Hero Card Bonito */
         .guru-hero-card { background: linear-gradient(135deg, #1e1e1e, #252525); border: 1px solid #333; border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 20px; margin-bottom: 30px; }
         
         .requests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
@@ -123,7 +132,7 @@
         <main class="main-content">
             <div class="main-header">
                 <div class="user-welcome"><h2 id="welcome-msg">Bem-vindo</h2><p>Painel de Controle</p></div>
-                </div>
+            </div>
 
             <div id="guru-hero-card" class="guru-hero-card">
                 <div id="guru-avatar-img" style="width:80px; height:80px; border-radius:50%; background:#333; background-size:cover; border:2px solid var(--primary); flex-shrink:0;"></div>
@@ -166,12 +175,12 @@
                 <h3>Perfil do Guru</h3>
                 <form id="formPerfilGuruEdit" style="max-width:500px; margin-top:20px;">
                     <input type="hidden" id="conf-img-base64"><input type="hidden" id="conf-pdf-base64">
-                    <label>Foto</label><input type="file" id="upload-foto">
+                    <label>Foto</label><input type="file" id="upload-foto"><div id="preview-avatar" style="width:50px; height:50px; background-size:cover; border-radius:50%; margin-bottom:10px;"></div>
                     <label>Título</label><input type="text" id="conf-titulo">
                     <label>Subtítulo</label><input type="text" id="conf-sub">
                     <label>Bio</label><textarea id="conf-bio" style="height:100px;"></textarea>
                     <label>Lattes</label><input type="url" id="conf-lattes">
-                    <label>PDF Currículo</label><input type="file" id="upload-pdf-curriculo">
+                    <label>PDF Currículo</label><input type="file" id="upload-pdf-curriculo"><div id="display-pdf-name" style="font-size:11px; color:#aaa;"></div>
                     <button class="btn-primary" id="btn-save-perf-guru">Salvar Perfil</button>
                 </form>
             </div>
@@ -210,13 +219,10 @@
         <div class="modal-box">
             <h3>Sobre o Guru</h3>
             <div id="qualificacoes-texto" style="margin:15px 0; color:#ccc;"></div>
-            
             <div style="display:flex; gap:10px;">
                 <a id="btn-link-lattes" href="#" target="_blank" class="btn-primary" style="display:none; background:#333; flex:1; border:1px solid #555;">🌐 Acessar Lattes</a>
-                
                 <a id="btn-link-pdf" href="#" download="Curriculo_Guru.pdf" class="btn-primary" style="display:none; background:#333; flex:1; border:1px solid #555;">📄 Baixar Currículo PDF</a>
             </div>
-            
             <h4 style="margin-top:15px; color:#ffeb3b;">Avaliações</h4>
             <div id="lista-avaliacoes-publicas" style="max-height:200px; overflow-y:auto;"></div>
             <button class="btn-secondary" onclick="fecharModal(this)">Fechar</button>
@@ -252,7 +258,6 @@
         let filtroAtual = 'aberto'; 
         const telas = { login: document.getElementById('tela-acesso'), dash: document.getElementById('tela-dashboard') };
         
-        // --- 1. AUTENTICAÇÃO E CARREGAMENTO ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 let d = {}; try{const s=await getDoc(doc(db,"usuarios",user.uid)); if(s.exists())d=s.data();}catch(e){}
@@ -260,11 +265,10 @@
                 iniciarSistema();
             } else {
                 usuarioAtual = null; telas.dash.classList.add('oculto'); telas.login.classList.remove('oculto');
-                document.getElementById('login-pass').value = ""; // Limpa senha ao sair
+                document.getElementById('login-pass').value = "";
             }
         });
 
-        // --- 2. SISTEMA DE ARQUIVOS (Híbrido) ---
         const LIMITE_BYTES = 750000; 
         function lerArquivo(file) {
             return new Promise((resolve) => {
@@ -274,19 +278,14 @@
             });
         }
 
-        // --- 3. FUNÇÕES DE TELA ---
         function iniciarSistema() {
             telas.login.classList.add('oculto'); telas.dash.classList.remove('oculto');
             const isGuru = usuarioAtual.role === 'guru';
             document.getElementById('welcome-msg').innerText = `Olá, ${usuarioAtual.nome.split(' ')[0]}`;
-            
-            // Controle de Menu
             document.getElementById('nav-config-guru').classList.toggle('oculto', !isGuru);
             document.getElementById('nav-reclamacoes').classList.toggle('oculto', !isGuru);
             document.getElementById('nav-fazer-reclamacao').classList.toggle('oculto', isGuru);
             document.getElementById('btn-novo-pedido').classList.toggle('oculto', isGuru);
-            // Removido mini-guru-card pois já removemos do HTML
-            
             lerPedidosDoFirebase();
             carregarPerfilPublicoGuru(); 
         }
@@ -307,40 +306,23 @@
             }
         };
         
-        window.filtrar = (f, el) => { 
-            filtroAtual = f; 
-            document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active')); 
-            el.classList.add('active'); 
-            lerPedidosDoFirebase(); 
-        };
-        
+        window.filtrar = (f, el) => { filtroAtual = f; document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active')); el.classList.add('active'); lerPedidosDoFirebase(); };
         window.fecharModal = (el) => el.closest('.modal-overlay').classList.add('oculto');
         window.sair = async () => { await signOut(auth); };
 
-        // --- 4. LÓGICA CRÍTICA DE PEDIDOS (CORRIGIDA) ---
         function lerPedidosDoFirebase() {
             let q;
-            // CORREÇÃO: Aluno só busca o dele. Guru busca tudo.
-            if(usuarioAtual.role === 'student') {
-                // Removemos o orderBy para evitar erro de Indice no aluno por enquanto. Ordenamos no JS.
-                q = query(collection(db, "pedidos"), where("emailAluno", "==", usuarioAtual.email));
-            } else {
-                q = query(collection(db, "pedidos"), orderBy("data", "desc"));
-            }
+            if(usuarioAtual.role === 'student') { q = query(collection(db, "pedidos"), where("emailAluno", "==", usuarioAtual.email)); }
+            else { q = query(collection(db, "pedidos"), orderBy("data", "desc")); }
 
             onSnapshot(q, (snapshot) => {
                 const lista = document.getElementById('lista-pedidos'); lista.innerHTML = "";
-                let dados = [];
-                snapshot.forEach(doc => dados.push({ id: doc.id, ...doc.data() }));
-                
-                // Ordenação manual para o aluno (já que tiramos do query)
+                let dados = []; snapshot.forEach(doc => dados.push({ id: doc.id, ...doc.data() }));
                 if(usuarioAtual.role === 'student') dados.sort((a,b) => b.data - a.data);
 
                 let cT=0, cA=0, cC=0;
-
                 dados.forEach(p => {
-                    const pid = p.id;
-                    cT++;
+                    const pid = p.id; cT++;
                     if(['Em Análise','Proposta Recebida','Contraproposta'].includes(p.status)) cA++;
                     if(['Finalizado','Avaliado'].includes(p.status)) cC++;
 
@@ -365,7 +347,7 @@
 
                     let html = `${usuarioAtual.role==='guru' ? `<button class="btn-delete-req" onclick="deletarPedido('${pid}')">×</button>` : ''}
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                            <span style="font-size:12px; color:var(--text-muted);">${p.materia}</span>
+                            <span style="font-size:12px; color:#777;">${p.materia}</span>
                             <span class="req-status" style="background:${stColor}20; color:${stColor};">${p.status}</span>
                         </div>
                         <h3 style="font-size:16px; margin-bottom:5px;">${p.titulo}</h3>
@@ -373,32 +355,24 @@
                         <div style="margin:10px 0;">${anexoHTML}</div>
                         <div style="border-top:1px solid #333; margin-top:10px; padding-top:10px;">`;
 
-                    // --- EXIBIÇÃO DE PROPOSTA ---
                     if(p.proposta) {
                         html += `<div style="font-weight:bold; color:var(--status-pago); margin-bottom:5px;">R$ ${p.proposta.valor}</div><div style="font-size:12px; color:#888; font-style:italic; margin-bottom:10px;">"${p.proposta.msg}"</div>`;
-                        
                         if(usuarioAtual.role === 'student') {
-                            if(p.status !== 'Pago' && p.status !== 'Verificando Pagamento' && p.status !== 'Finalizado' && p.status !== 'Avaliado') {
+                            if(!['Pago', 'Verificando Pagamento', 'Finalizado', 'Avaliado'].includes(p.status)) {
                                 if(p.status === 'Pagamento Recusado') html += `<div style="color:var(--danger); font-size:11px; margin-bottom:5px;">Pagamento recusado. Tente novamente.</div>`;
                                 html += `<div style="display:flex; gap:5px;"><button onclick="prepararPagamento('${pid}', '${p.proposta.valor}')" class="btn-primary" style="flex:1; font-size:12px;">Pagar</button><button onclick="prepararContra('${pid}')" class="btn-secondary" style="flex:1; font-size:12px;">Contraproposta</button></div>`;
-                            } else if (p.status === 'Verificando Pagamento') { 
-                                html += `<small style="color:var(--status-verif);">Aguardando aprovação do Guru.</small>`; 
-                            }
+                            } else if (p.status === 'Verificando Pagamento') html += `<small style="color:var(--status-verif);">Aguardando aprovação do Guru.</small>`;
                         } else if (usuarioAtual.role === 'guru') {
                             if(p.status === 'Contraproposta') {
                                 html += `<div style="background:#2a1a2a; padding:10px; border-radius:6px; margin-top:5px;"><div style="font-size:12px; color:var(--status-contra);">Oferta Aluno: <b>R$ ${p.contraproposta.valor}</b></div><div style="display:flex; gap:5px; margin-top:5px;"><button onclick="aceitarContra('${pid}', '${p.contraproposta.valor}')" class="btn-primary" style="flex:1; font-size:11px;">Aceitar</button><button onclick='prepararProposta("${pid}", ${JSON.stringify(p).replace(/'/g,"")})' class="btn-secondary" style="flex:1; font-size:11px;">Mudar Valor</button></div></div>`;
                             } else if (p.status === 'Verificando Pagamento') {
                                 let compHTML = (p.comprovante && p.comprovante.startsWith('data:')) ? `<a href="${p.comprovante}" download="Comprovante" class="btn-secondary" style="display:block; text-align:center; font-size:12px; margin-bottom:5px; text-decoration:none;">📄 Ver Comprovante</a>` : `<span style="display:block; font-size:12px; color:var(--status-pago); text-align:center; margin-bottom:5px;">Comprovante no WhatsApp</span>`;
                                 html += `${compHTML}<div style="display:flex; gap:5px;"><button onclick="aprovar('${pid}')" class="btn-primary" style="flex:1; background:var(--status-pago); font-size:11px;">Aprovar</button><button onclick="recusar('${pid}')" class="btn-primary" style="flex:1; background:var(--danger); font-size:11px;">Recusar</button></div>`;
-                            } else if (p.status === 'Pago') {
-                                html += `<button onclick="prepararEntrega('${pid}')" class="btn-primary" style="width:100%; background:var(--status-final);">Entregar Trabalho</button>`;
-                            }
+                            } else if (p.status === 'Pago') html += `<button onclick="prepararEntrega('${pid}')" class="btn-primary" style="width:100%; background:var(--status-final);">Entregar Trabalho</button>`;
                         }
                     } else if(usuarioAtual.role === 'guru') {
                         html += `<button class="btn-primary" onclick='prepararProposta("${pid}", ${JSON.stringify(p).replace(/'/g,"")})' style="width:100%;">Fazer Proposta</button>`;
-                    } else {
-                        html += `<small style="color:#666;">Aguardando Guru...</small>`;
-                    }
+                    } else html += `<small style="color:#666;">Aguardando Guru...</small>`;
                     
                     if(p.status==='Finalizado'||p.status==='Avaliado') {
                         let resHTML = (p.arquivoResolucao && p.arquivoResolucao.startsWith('data:')) ? `<a href="${p.arquivoResolucao}" download="Resolucao" class="btn-primary" style="display:block; text-align:center; text-decoration:none; margin-bottom:5px;">📥 Baixar Resolução</a>` : `<a href="https://wa.me/${GURU_ZAP}" target="_blank" class="btn-primary" style="display:block; text-align:center; text-decoration:none; margin-bottom:5px;">📥 Resolução no WhatsApp</a>`;
@@ -414,11 +388,9 @@
             });
         }
 
-        // --- 5. AÇÕES DE FORMULÁRIO E INPUTS ---
         const setupFI = (id, dId, wId, bId) => document.getElementById(id).addEventListener('change', function(e) { if(this.files[0]) { document.getElementById(dId).innerText=this.files[0].name; if(wId) document.getElementById(wId).style.display = (this.files[0].size > LIMITE_BYTES) ? 'block' : 'none'; if(bId) document.getElementById(bId).disabled=false; }});
         setupFI('ped-file','file-name-display','file-warning-display',null); setupFI('pay-file','pay-file-display','pay-warning-display','btn-confirmar-pag'); setupFI('entrega-file','entrega-file-display','entrega-warning-display','btn-confirmar-entrega'); setupFI('upload-foto','preview-avatar',null,null); setupFI('upload-pdf-curriculo','display-pdf-name',null,null);
 
-        // Login & Cadastro
         document.getElementById('formLogin').onsubmit = async (e) => { e.preventDefault(); try { await setPersistence(auth, browserSessionPersistence); await signInWithEmailAndPassword(auth, document.getElementById('login-user').value.trim(), document.getElementById('login-pass').value.trim()); } catch (error) { alert("Email ou senha inválidos."); } };
         document.getElementById('formCadastro').onsubmit = async (e) => { e.preventDefault();
             const nome=document.getElementById('cad-nome').value, email=document.getElementById('cad-email').value, zap=document.getElementById('cad-zap').value, curso=document.getElementById('cad-curso').value, senha=document.getElementById('cad-pass').value;
@@ -427,7 +399,6 @@
         };
         document.getElementById('btn-enviar-reset').onclick = async () => { try { await sendPasswordResetEmail(auth, document.getElementById('reset-email').value); alert("Enviado!"); document.getElementById('modal-reset-senha').classList.add('oculto'); } catch (error) { alert("Erro: " + error.message); } };
 
-        // Pedido
         document.getElementById('formPedido').onsubmit = async (e) => { e.preventDefault();
             const t=document.getElementById('ped-titulo').value, m=document.getElementById('ped-materia').value, f=document.getElementById('ped-file').files[0];
             try { const fd = await lerArquivo(f); 
@@ -437,7 +408,6 @@
             } catch(er){ alert("Erro: "+er.message); }
         };
 
-        // Proposta & Negociação
         let idTemp = null; let pedTemp = null;
         window.prepararProposta = (id, p) => { idTemp = id; pedTemp = p; document.getElementById('modal-proposta').classList.remove('oculto'); }
         document.getElementById('formProposta').onsubmit = async (e) => { e.preventDefault(); const v=document.getElementById('prop-valor').value, m=document.getElementById('prop-msg').value; await updateDoc(doc(db, "pedidos", idTemp), { status: "Proposta Recebida", proposta: { valor: v, msg: m } }); const zl=pedTemp.zapAluno?pedTemp.zapAluno.replace(/\D/g,""):""; if(zl) window.open(`https://wa.me/55${zl}?text=${encodeURIComponent(`Proposta para ${pedTemp.titulo}: R$ ${v}`)}`,'_blank'); document.getElementById('modal-proposta').classList.add('oculto'); };
@@ -446,41 +416,29 @@
         document.getElementById('formContra').onsubmit=async(e)=>{ e.preventDefault(); await updateDoc(doc(db,"pedidos",idTemp),{ status:"Contraproposta", contraproposta:{ valor:document.getElementById('contra-valor').value, msg:document.getElementById('contra-msg').value }}); alert("Enviado!"); document.getElementById('modal-contraproposta').classList.add('oculto'); };
         window.aceitarContra=async(id,nv)=>{ if(confirm(`Aceitar R$ ${nv}?`)) await updateDoc(doc(db,"pedidos",id),{ status:"Proposta Recebida", "proposta.valor":nv }); };
 
-        // Pagamento
         window.prepararPagamento=(id,v)=>{ idTemp=id; document.getElementById('modal-pagamento').classList.remove('oculto'); document.getElementById('display-pix').innerText=GLOBAL_CHAVE_PIX; document.getElementById('pay-val').innerText=`R$ ${v}`; };
         document.getElementById('btn-copiar').onclick=()=>navigator.clipboard.writeText(GLOBAL_CHAVE_PIX).then(()=>alert("Copiado!"));
-        document.getElementById('btn-confirmar-pag').onclick=async()=>{ if(!idTemp)return; const btn=document.getElementById('btn-confirmar-pag'); btn.disabled=true; try{ const f=document.getElementById('pay-file').files[0]; const fd=await lerArquivo(f); await updateDoc(doc(db,"pedidos",idTemp),{ status:"Verificando Pagamento", comprovante: fd?.dados||(fd?.tipo==='ZAP'?"Enviado via WhatsApp":null) }); document.getElementById('modal-pagamento').classList.add('oculto'); document.getElementById('pay-file').value=""; document.getElementById('pay-warning-display').style.display='none'; if(fd?.tipo==='ZAP'){ window.open(`https://wa.me/${GURU_ZAP}?text=${encodeURIComponent(`Pagamento pedido ...${idTemp.slice(-4)}. Comprovante aqui.`)}`,'_blank'); alert("Redirecionando para WhatsApp (Arquivo grande)."); } else alert("Enviado!"); } catch(e){alert("Erro: "+e.message);} finally{btn.disabled=false;} };
+        document.getElementById('btn-confirmar-pag').onclick=async()=>{ if(!idTemp)return; const btn=document.getElementById('btn-confirmar-pag'); btn.disabled=true; try{ const f=document.getElementById('pay-file').files[0]; const fd=await lerArquivo(f); await updateDoc(doc(db,"pedidos",idTemp),{ status:"Verificando Pagamento", comprovante: fd?.dados||(fd?.tipo==='ZAP'?"Enviado via WhatsApp":null) }); document.getElementById('modal-pagamento').classList.add('oculto'); document.getElementById('pay-file').value=""; document.getElementById('pay-warning-display').style.display='none'; if(fd?.tipo==='ZAP'){ window.open(`https://wa.me/${GURU_ZAP}?text=${encodeURIComponent(`Pagamento pedido ...${idTemp.slice(-4)}. Comprovante aqui.`)}`,'_blank'); alert("Redirecionando para WhatsApp."); } else alert("Enviado!"); } catch(e){alert("Erro: "+e.message);} finally{btn.disabled=false;} };
         window.aprovar=async(id)=>{ if(confirm("Confirmar $$$?")) await updateDoc(doc(db,"pedidos",id),{ status:"Pago" }); }; window.recusar=async(id)=>{ if(confirm("Recusar?")) await updateDoc(doc(db,"pedidos",id),{ status:"Pagamento Recusado" }); };
 
-        // Entrega
         window.prepararEntrega=(id)=>{ idTemp=id; document.getElementById('modal-entrega').classList.remove('oculto'); };
         document.getElementById('btn-confirmar-entrega').onclick=async()=>{ const btn=document.getElementById('btn-confirmar-entrega'); btn.disabled=true; try{ const f=document.getElementById('entrega-file').files[0]; const fd=await lerArquivo(f); await updateDoc(doc(db,"pedidos",idTemp),{ status:"Finalizado", arquivoResolucao: fd?.dados||(fd?.tipo==='ZAP'?"Enviado via WhatsApp":null) }); document.getElementById('modal-entrega').classList.add('oculto'); document.getElementById('entrega-file').value=""; document.getElementById('entrega-warning-display').style.display='none'; if(fd?.tipo==='ZAP') alert("Avise o aluno no WhatsApp (Arquivo grande)."); else alert("Entregue!"); } catch(e){alert("Erro: "+e.message);} finally{btn.disabled=false;} };
 
-        // Avaliação & Perfil
         window.prepararAval=(id)=>{ idTemp=id; document.getElementById('modal-avaliacao').classList.remove('oculto'); };
         document.querySelectorAll('.star').forEach(s=>s.onclick=function(){ let nota=this.getAttribute('data-val'); document.querySelectorAll('.star').forEach(st=>st.classList.toggle('selected', st.getAttribute('data-val')<=nota)); });
         document.getElementById('btn-enviar-aval').onclick=async()=>{ const nota=document.querySelectorAll('.star.selected').length; await updateDoc(doc(db,"pedidos",idTemp),{ status:"Avaliado", avaliacao:{ nota:nota, msg:document.getElementById('aval-msg').value }}); alert("Avaliado!"); document.getElementById('modal-avaliacao').classList.add('oculto'); };
-        document.getElementById('formReclamacao').onsubmit=async(e)=>{ e.preventDefault(); await addDoc(collection(db,"reclamacoes"),{ aluno:usuarioAtual.nome, email:usuarioAtual.email, zap:usuarioAtual.zap, titulo:document.getElementById('rec-titulo').value, msg:document.getElementById('rec-msg').value, data:Date.now() }); alert("Registrado."); document.getElementById('modal-reclamacao').classList.add('oculto'); };
         
         document.getElementById('formPerfilAluno').onsubmit=async(e)=>{ e.preventDefault(); await updateDoc(doc(db,"usuarios",usuarioAtual.uid),{ nome:document.getElementById('perf-nome').value, zap:document.getElementById('perf-zap').value, curso:document.getElementById('perf-curso').value, bio:document.getElementById('perf-bio').value }); alert("Salvo!"); };
-        document.getElementById('formPerfilGuruEdit').onsubmit=async(e)=>{ e.preventDefault(); const btn=document.getElementById('btn-save-perf-guru'); btn.disabled=true; try{ const ff=document.getElementById('upload-foto').files[0], fp=document.getElementById('upload-pdf-curriculo').files[0]; let bf=document.getElementById('conf-img-base64').value, bp=document.getElementById('conf-pdf-base64').value; if(ff){ const r=await lerArquivo(ff); if(r.tipo==='ZAP')throw new Error("Foto muito grande"); bf=r.dados; } if(fp){ const r=await lerArquivo(fp); if(r.tipo==='ZAP')throw new Error("PDF muito grande"); bp=r.dados; } await setDoc(doc(db,"config_site","perfil_guru"),{ titulo:document.getElementById('conf-titulo').value, sub:document.getElementById('conf-sub').value, bio:document.getElementById('conf-bio').value, imgBase64:bf, pdfBase64:bp, lattes:document.getElementById('conf-lattes').value }, {merge:true}); alert("Atualizado!"); carregarPerfilPublicoGuru(); }catch(e){alert("Erro: "+e.message);} finally{btn.disabled=false;} };
+        document.getElementById('formPerfilGuruEdit').onsubmit=async(e)=>{ e.preventDefault(); const btn=document.getElementById('btn-save-perf-guru'); btn.disabled=true; try{ const ff=document.getElementById('upload-foto').files[0], fp=document.getElementById('upload-pdf-curriculo').files[0]; let bf=document.getElementById('conf-img-base64').value, bp=document.getElementById('conf-pdf-base64').value; if(ff){ const r=await lerArquivo(ff); bf=r.dados; } if(fp){ const r=await lerArquivo(fp); bp=r.dados; } await setDoc(doc(db,"config_site","perfil_guru"),{ titulo:document.getElementById('conf-titulo').value, sub:document.getElementById('conf-sub').value, bio:document.getElementById('conf-bio').value, imgBase64:bf, pdfBase64:bp, lattes:document.getElementById('conf-lattes').value }, {merge:true}); alert("Atualizado!"); carregarPerfilPublicoGuru(); }catch(e){alert("Erro: "+e.message);} finally{btn.disabled=false;} };
         document.getElementById('formConfigGuru').onsubmit=async(e)=>{ e.preventDefault(); const np=document.getElementById('conf-pix').value, ns=document.getElementById('conf-nova-senha').value; if(np) await setDoc(doc(db,"config_site","perfil_guru"),{pix:np},{merge:true}); if(ns){ try{await updatePassword(auth.currentUser,ns);alert("Senha alterada!");}catch(e){alert(e.message);} } alert("Salvo!"); carregarPerfilPublicoGuru(); };
 
-        // Carregar Dados Admin
-        function lerReclamacoes(){ onSnapshot(query(collection(db,"reclamacoes"), orderBy("data","desc")), (snap)=>{ const l=document.getElementById('lista-reclamacoes-admin'); l.innerHTML=""; snap.forEach(d=>{ const r=d.data(); l.innerHTML+=`<div class="request-card"><button class="btn-delete-req" onclick="excluirReclamacao('${d.id}')">✅</button><div style="font-weight:bold; color:var(--danger);">${r.titulo}</div><div style="font-size:12px; color:#aaa;">${r.aluno} (${r.zap})</div><div style="color:#ddd;">"${r.msg}"</div></div>`; }); if(!l.children.length)l.innerHTML='<div style="padding:20px;text-align:center;">Sem reclamações.</div>'; }); }
-        window.excluirReclamacao=async(id)=>{ if(confirm("Resolver?")) await deleteDoc(doc(db,"reclamacoes",id)); };
-        
         async function carregarPerfilPublicoGuru(){ 
             const d=await getDoc(doc(db,"config_site","perfil_guru")); 
             if(d.exists()){ 
-                const dd=d.data(); 
-                if(dd.pix) GLOBAL_CHAVE_PIX=dd.pix; 
-                const im=dd.imgBase64||""; 
+                const dd=d.data(); if(dd.pix) GLOBAL_CHAVE_PIX=dd.pix; const im=dd.imgBase64||""; 
                 if(document.getElementById('guru-avatar-img'))document.getElementById('guru-avatar-img').style.backgroundImage=`url('${im}')`; 
-                if(document.getElementById('header-guru-img'))document.getElementById('header-guru-img').style.backgroundImage=`url('${im}')`; 
                 if(document.getElementById('guru-title'))document.getElementById('guru-title').innerText=dd.titulo; 
                 if(document.getElementById('guru-subtitle'))document.getElementById('guru-subtitle').innerText=dd.sub; 
-                
                 if(usuarioAtual&&usuarioAtual.role==='guru'){ 
                     document.getElementById('preview-avatar').style.backgroundImage=`url('${im}')`; 
                     document.getElementById('conf-img-base64').value=im; 
@@ -491,20 +449,17 @@
                     document.getElementById('conf-lattes').value=dd.lattes||""; 
                     document.getElementById('conf-pix').value=dd.pix||""; 
                 } 
-                document.getElementById('btn-ver-quali-header').onclick=document.getElementById('btn-ver-quali').onclick=async()=>{ 
+                document.getElementById('btn-ver-quali').onclick=async()=>{ 
                     document.getElementById('qualificacoes-texto').innerText=dd.bio||""; 
                     const bl=document.getElementById('btn-link-lattes'); if(dd.lattes){bl.href=dd.lattes; bl.style.display='block';}else bl.style.display='none'; 
                     const bp=document.getElementById('btn-link-pdf'); if(dd.pdfBase64){bp.href=dd.pdfBase64; bp.style.display='block';}else bp.style.display='none'; 
                     const la=document.getElementById('lista-avaliacoes-publicas'); la.innerHTML='...'; 
-                    const q=query(collection(db,"pedidos"),where("status","==","Avaliado")); 
-                    onSnapshot(q,(s)=>{ la.innerHTML=""; if(s.empty){la.innerHTML='<div style="text-align:center;color:#666;">Sem avaliações.</div>';return;} s.forEach(d=>{ const r=d.data(); const st="★".repeat(r.avaliacao.nota); la.innerHTML+=`<div class="review-item"><div class="review-header"><span>${r.aluno.split(' ')[0]}</span> <span class="review-stars">${st}</span></div><div style="font-size:13px; color:#ddd;">"${r.avaliacao.msg}"</div></div>`; }); }); 
+                    onSnapshot(query(collection(db,"pedidos"),where("status","==","Avaliado")),(s)=>{ la.innerHTML=""; s.forEach(d=>{ const r=d.data(); la.innerHTML+=`<div class="review-item"><span>${r.aluno.split(' ')[0]}</span> ★${r.avaliacao.nota}<br><small>"${r.avaliacao.msg}"</small></div>`; }); }); 
                     document.getElementById('modal-qualificacoes').classList.remove('oculto'); 
                 }; 
             } 
         }
         window.deletarPedido=async(id)=>{ if(confirm("Excluir?")) await deleteDoc(doc(db,"pedidos",id)); };
-        document.querySelectorAll('.btn-close-modal').forEach(b=>b.onclick=(e)=>{e.preventDefault();e.target.closest('.modal-overlay').classList.add('oculto');});
-        const bar=document.getElementById('btn-admin-recl'); if(bar) bar.onclick=()=>{ switchView('reclamacoes'); lerReclamacoes(); };
     </script>
 </body>
 </html>
