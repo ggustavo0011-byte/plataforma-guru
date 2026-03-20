@@ -135,7 +135,7 @@
             </div>
 
             <div id="guru-hero-card" class="guru-hero-card">
-                <div id="guru-avatar-img" style="width:80px; height:80px; border-radius:50%; background:#333; background-size:cover; border:2px solid var(--primary); flex-shrink:0;"></div>
+                <div id="guru-avatar-img" style="width:80px; height:80px; border-radius:50%; background:#333; background-size:cover; background-position:center; border:2px solid var(--primary); flex-shrink:0;"></div>
                 <div>
                     <h2 id="guru-title" style="margin-bottom:5px; font-size:20px; color:#fff;">Guru da Elétrica</h2>
                     <p id="guru-subtitle" style="color:#aaa; margin-bottom:10px; font-size:14px;">Especialista</p>
@@ -175,7 +175,7 @@
                 <h3>Perfil do Guru</h3>
                 <form id="formPerfilGuruEdit" style="max-width:500px; margin-top:20px;">
                     <input type="hidden" id="conf-img-base64"><input type="hidden" id="conf-pdf-base64">
-                    <label>Foto</label><input type="file" id="upload-foto"><div id="preview-avatar" style="width:50px; height:50px; background-size:cover; border-radius:50%; margin-bottom:10px;"></div>
+                    <label>Foto <span style="color:var(--danger); font-size:12px;">(Máx 700kb - Comprima a imagem)</span></label><input type="file" id="upload-foto" accept="image/*"><div id="preview-avatar" style="width:50px; height:50px; background-size:cover; background-position:center; border-radius:50%; margin-bottom:10px;"></div>
                     <label>Título</label><input type="text" id="conf-titulo">
                     <label>Subtítulo</label><input type="text" id="conf-sub">
                     <label>Bio</label><textarea id="conf-bio" style="height:100px;"></textarea>
@@ -195,7 +195,8 @@
             </div>
 
             <div id="view-reclamacoes" class="oculto">
-                <h3 style="color:var(--danger);">Reclamações</h3>
+                <h3 style="color:var(--danger);">Reclamações dos Alunos</h3>
+                <p style="font-size: 13px; color: #aaa; margin-top: 5px;">Acompanhe aqui os problemas relatados.</p>
                 <div id="lista-reclamacoes-admin" class="requests-grid" style="margin-top:20px;"></div>
             </div>
         </main>
@@ -213,7 +214,7 @@
     
     <div id="modal-avaliacao" class="modal-overlay oculto"><div class="modal-box" style="text-align:center;"><h3 style="color:#ffeb3b;">Avaliar</h3><div class="rating-stars"><span class="star" data-val="1">★</span><span class="star" data-val="2">★</span><span class="star" data-val="3">★</span><span class="star" data-val="4">★</span><span class="star" data-val="5">★</span></div><textarea id="aval-msg" placeholder="Comentário..."></textarea><button id="btn-enviar-aval" class="btn-primary">Enviar</button><button class="btn-secondary" onclick="fecharModal(this)">Cancelar</button></div></div>
     
-    <div id="modal-reclamacao" class="modal-overlay oculto"><div class="modal-box"><h3 style="color:var(--danger);">Problema?</h3><form id="formReclamacao"><input id="rec-titulo" placeholder="Assunto"><textarea id="rec-msg" placeholder="Detalhes..."></textarea><button class="btn-primary" style="background:var(--danger);">Enviar</button></form><button class="btn-secondary" onclick="fecharModal(this)">Cancelar</button></div></div>
+    <div id="modal-reclamacao" class="modal-overlay oculto"><div class="modal-box"><h3 style="color:var(--danger);">Problema?</h3><form id="formReclamacao"><input id="rec-titulo" placeholder="Assunto" required><textarea id="rec-msg" placeholder="Descreva o problema em detalhes..." required></textarea><button class="btn-primary" style="background:var(--danger);">Enviar Reclamação</button></form><button class="btn-secondary" onclick="fecharModal(this)">Cancelar</button></div></div>
     
     <div id="modal-qualificacoes" class="modal-overlay oculto">
         <div class="modal-box">
@@ -288,6 +289,9 @@
             document.getElementById('btn-novo-pedido').classList.toggle('oculto', isGuru);
             lerPedidosDoFirebase();
             carregarPerfilPublicoGuru(); 
+            
+            // LER RECLAMAÇÕES SE FOR GURU
+            if(isGuru) lerReclamacoes();
         }
 
         window.switchView = (v) => {
@@ -388,6 +392,39 @@
             });
         }
 
+        // FUNÇÃO DE LER RECLAMAÇÕES (GURU)
+        function lerReclamacoes() {
+            const q = query(collection(db, "reclamacoes"), orderBy("data", "desc"));
+            onSnapshot(q, (snapshot) => {
+                const lista = document.getElementById('lista-reclamacoes-admin');
+                lista.innerHTML = "";
+                if(snapshot.empty) {
+                    lista.innerHTML = '<div style="color:#aaa; grid-column:1/-1; text-align:center; padding: 20px;">Nenhuma reclamação registrada no momento.</div>';
+                    return;
+                }
+                snapshot.forEach(docSnap => {
+                    const r = docSnap.data();
+                    const dataFormatada = new Date(r.data).toLocaleDateString('pt-BR');
+                    lista.innerHTML += `
+                        <div class="request-card" style="border-color: var(--danger);">
+                            <div style="display:flex; justify-content:space-between;">
+                                <h4 style="color:var(--danger);">${r.titulo}</h4>
+                                <span style="font-size:11px; color:#888;">${dataFormatada}</span>
+                            </div>
+                            <p style="font-size:12px; color:#aaa; margin-top:5px;">De: ${r.aluno} (${r.zap})</p>
+                            <div style="margin-top:10px; padding:10px; background:#111; border-radius:6px; font-size:13px; color:#ddd;">"${r.msg}"</div>
+                            <button onclick="deletarReclamacao('${docSnap.id}')" class="btn-secondary" style="margin-top:15px; color:var(--danger); border-color:var(--danger);">Marcar como Resolvido / Apagar</button>
+                        </div>
+                    `;
+                });
+            });
+        }
+        window.deletarReclamacao = async(id) => {
+            if(confirm("Deseja marcar como resolvido e apagar esta reclamação?")) {
+                await deleteDoc(doc(db,"reclamacoes",id));
+            }
+        };
+
         const setupFI = (id, dId, wId, bId) => document.getElementById(id).addEventListener('change', function(e) { if(this.files[0]) { document.getElementById(dId).innerText=this.files[0].name; if(wId) document.getElementById(wId).style.display = (this.files[0].size > LIMITE_BYTES) ? 'block' : 'none'; if(bId) document.getElementById(bId).disabled=false; }});
         setupFI('ped-file','file-name-display','file-warning-display',null); setupFI('pay-file','pay-file-display','pay-warning-display','btn-confirmar-pag'); setupFI('entrega-file','entrega-file-display','entrega-warning-display','btn-confirmar-entrega'); setupFI('upload-foto','preview-avatar',null,null); setupFI('upload-pdf-curriculo','display-pdf-name',null,null);
 
@@ -406,6 +443,30 @@
             document.getElementById('modal-pedido').classList.add('oculto'); e.target.reset(); document.getElementById('file-name-display').innerText="Nenhum arquivo"; document.getElementById('file-warning-display').style.display='none';
             if(fd?.tipo==='ZAP') { window.open(`https://wa.me/${GURU_ZAP}?text=${encodeURIComponent(`Olá! Abri pedido "${t}". Arquivo grande, enviando aqui.`)}`, '_blank'); alert("Arquivo grande. Redirecionando para WhatsApp."); } else alert("Enviado!");
             } catch(er){ alert("Erro: "+er.message); }
+        };
+
+        // ENVIAR RECLAMAÇÃO (ALUNO)
+        document.getElementById('formReclamacao').onsubmit = async (e) => { 
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            try {
+                await addDoc(collection(db, "reclamacoes"), {
+                    aluno: usuarioAtual.nome,
+                    email: usuarioAtual.email,
+                    zap: usuarioAtual.zap,
+                    titulo: document.getElementById('rec-titulo').value,
+                    msg: document.getElementById('rec-msg').value,
+                    data: Date.now()
+                });
+                alert("Sua reclamação foi registrada e será analisada!");
+                document.getElementById('modal-reclamacao').classList.add('oculto');
+                e.target.reset();
+            } catch(err) {
+                alert("Erro ao enviar: " + err.message);
+            } finally {
+                btn.disabled = false;
+            }
         };
 
         let idTemp = null; let pedTemp = null;
@@ -429,7 +490,34 @@
         document.getElementById('btn-enviar-aval').onclick=async()=>{ const nota=document.querySelectorAll('.star.selected').length; await updateDoc(doc(db,"pedidos",idTemp),{ status:"Avaliado", avaliacao:{ nota:nota, msg:document.getElementById('aval-msg').value }}); alert("Avaliado!"); document.getElementById('modal-avaliacao').classList.add('oculto'); };
         
         document.getElementById('formPerfilAluno').onsubmit=async(e)=>{ e.preventDefault(); await updateDoc(doc(db,"usuarios",usuarioAtual.uid),{ nome:document.getElementById('perf-nome').value, zap:document.getElementById('perf-zap').value, curso:document.getElementById('perf-curso').value, bio:document.getElementById('perf-bio').value }); alert("Salvo!"); };
-        document.getElementById('formPerfilGuruEdit').onsubmit=async(e)=>{ e.preventDefault(); const btn=document.getElementById('btn-save-perf-guru'); btn.disabled=true; try{ const ff=document.getElementById('upload-foto').files[0], fp=document.getElementById('upload-pdf-curriculo').files[0]; let bf=document.getElementById('conf-img-base64').value, bp=document.getElementById('conf-pdf-base64').value; if(ff){ const r=await lerArquivo(ff); bf=r.dados; } if(fp){ const r=await lerArquivo(fp); bp=r.dados; } await setDoc(doc(db,"config_site","perfil_guru"),{ titulo:document.getElementById('conf-titulo').value, sub:document.getElementById('conf-sub').value, bio:document.getElementById('conf-bio').value, imgBase64:bf, pdfBase64:bp, lattes:document.getElementById('conf-lattes').value }, {merge:true}); alert("Atualizado!"); carregarPerfilPublicoGuru(); }catch(e){alert("Erro: "+e.message);} finally{btn.disabled=false;} };
+        
+        // SALVAR PERFIL DO GURU (AGORA COM ALERTA DE FOTO GRANDE)
+        document.getElementById('formPerfilGuruEdit').onsubmit=async(e)=>{ 
+            e.preventDefault(); const btn=document.getElementById('btn-save-perf-guru'); btn.disabled=true; 
+            try{ 
+                const ff=document.getElementById('upload-foto').files[0], fp=document.getElementById('upload-pdf-curriculo').files[0]; 
+                let bf=document.getElementById('conf-img-base64').value, bp=document.getElementById('conf-pdf-base64').value; 
+                
+                if(ff){ 
+                    const r = await lerArquivo(ff); 
+                    if(r.tipo === 'ZAP') {
+                        alert("❌ A foto escolhida é muito pesada (maior que 700kb). O banco de dados não suporta imagens tão grandes. Por favor, comprima a imagem em um site como o TinyPNG.com e tente novamente.");
+                        btn.disabled = false;
+                        return; // Para a execução aqui para não salvar em branco
+                    }
+                    bf = r.dados; 
+                } 
+                if(fp){ const r=await lerArquivo(fp); bp=r.dados; } 
+                
+                await setDoc(doc(db,"config_site","perfil_guru"),{ titulo:document.getElementById('conf-titulo').value, sub:document.getElementById('conf-sub').value, bio:document.getElementById('conf-bio').value, imgBase64:bf, pdfBase64:bp, lattes:document.getElementById('conf-lattes').value }, {merge:true}); 
+                alert("Perfil do Guru Atualizado!"); carregarPerfilPublicoGuru(); 
+            } catch(e) {
+                alert("Erro: "+e.message);
+            } finally {
+                btn.disabled=false;
+            } 
+        };
+        
         document.getElementById('formConfigGuru').onsubmit=async(e)=>{ e.preventDefault(); const np=document.getElementById('conf-pix').value, ns=document.getElementById('conf-nova-senha').value; if(np) await setDoc(doc(db,"config_site","perfil_guru"),{pix:np},{merge:true}); if(ns){ try{await updatePassword(auth.currentUser,ns);alert("Senha alterada!");}catch(e){alert(e.message);} } alert("Salvo!"); carregarPerfilPublicoGuru(); };
 
         async function carregarPerfilPublicoGuru(){ 
@@ -459,7 +547,7 @@
                 }; 
             } 
         }
-        window.deletarPedido=async(id)=>{ if(confirm("Excluir?")) await deleteDoc(doc(db,"pedidos",id)); };
+        window.deletarPedido=async(id)=>{ if(confirm("Excluir pedido definitivamente?")) await deleteDoc(doc(db,"pedidos",id)); };
     </script>
 </body>
 </html>
